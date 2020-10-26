@@ -1,7 +1,6 @@
 package com.tw.ouguidedtour
 
 
-import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,9 +10,6 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.net.wifi.rtt.WifiRttManager
-import android.os.Bundle
-import android.widget.Button
-import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -49,11 +45,12 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize Camera button
 
-        val scanQRCode: Button = findViewById(R.id.button)
+        val scanQRCode: Button = findViewById(R.id.QRCodeButton)
         // Open Camera
         scanQRCode.setOnClickListener {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(cameraIntent, cameraRequest)
+            startActivityForResult(cameraIntent, ACCESS_CAMERA_RQ)
+        }
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
       
@@ -66,10 +63,10 @@ class MainActivity : AppCompatActivity() {
             android.Manifest.permission.CAMERA,
             "Camera",
             ACCESS_CAMERA_RQ
-       )
+        )
 
-          // Init of Video button temp
-        val button = findViewById<Button>(R.id.button)
+        // Init of Video button temp
+        val button = findViewById<Button>(R.id.VideoButton)
         button.setOnClickListener{
             val intent = Intent(this, Activity2::class.java)
             startActivity(intent)
