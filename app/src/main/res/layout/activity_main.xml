@@ -16,26 +16,20 @@
             android:orientation="vertical" >
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/QRCodeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="SCAN QR CODE" />
-          
+
+            <Button
+                android:id="@+id/VideoButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Video View Button" />
         </LinearLayout>
-      
-        <LinearLayout>
-          <Button
-            android:id="@+id/button"
-            android:layout_width="159dp"
-            android:layout_height="63dp"
-            android:text="Click Me!!"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintVertical_bias="0.197" />
-          </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>
 

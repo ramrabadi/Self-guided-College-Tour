@@ -1,8 +1,6 @@
 package com.tw.ouguidedtour
 
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import android.net.Uri
 import android.widget.Toast
 import android.view.View
