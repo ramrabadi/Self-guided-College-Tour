@@ -13,13 +13,12 @@ import android.net.wifi.WifiManager
 import android.net.wifi.rtt.WifiRttManager
 import android.os.Bundle
 import android.widget.Button
-import android.content.Intent;
+import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
 import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
@@ -48,7 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         mWifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
 
-        // Initialize button
+        // Initialize Camera button
+
         val scanQRCode: Button = findViewById(R.id.button)
         // Open Camera
         scanQRCode.setOnClickListener {
@@ -76,7 +76,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         isDeviceCompatible()
-
     }
 
     private val locationListener: LocationListener = object : LocationListener {
