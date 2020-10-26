@@ -3,8 +3,15 @@ package com.tw.ouguidedtour
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import timber.log.Timber
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 
 class MainActivity : AppCompatActivity() {
+
+    private var locationManager : LocationManager? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -13,6 +20,21 @@ class MainActivity : AppCompatActivity() {
         // Check for wifi permissions
         // Check for gps permissions
 
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+
+
+    }
+
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            //LONGITUDE = location.longitude
+            //LATITUDE = location.latitude
+            //sets whatever var will hold lat & long to value
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
 
     }
 
