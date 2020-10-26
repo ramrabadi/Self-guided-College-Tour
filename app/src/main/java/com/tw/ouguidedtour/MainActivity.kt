@@ -1,5 +1,6 @@
 package com.tw.ouguidedtour
 
+
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +12,8 @@ import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.net.wifi.rtt.WifiRttManager
 import android.os.Bundle
+import android.widget.Button
+import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +26,7 @@ import android.location.LocationManager
 
 
 class MainActivity : AppCompatActivity() {
-  
+
     private var locationManager : LocationManager? = null
     private val ACCESS_FINE_LOCATION_RQ = 101
     private val ACCESS_CAMERA_RQ = 102
@@ -37,7 +40,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mWifiManager: WifiManager
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,12 +48,12 @@ class MainActivity : AppCompatActivity() {
         mWifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
 
         // Initialize Camera button
+
         val scanQRCode: Button = findViewById(R.id.button)
         // Open Camera
         scanQRCode.setOnClickListener {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             startActivityForResult(cameraIntent, cameraRequest)
-        }
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
       
@@ -65,6 +67,13 @@ class MainActivity : AppCompatActivity() {
             "Camera",
             ACCESS_CAMERA_RQ
        )
+
+          // Init of Video button temp
+        val button = findViewById<Button>(R.id.button)
+        button.setOnClickListener{
+            val intent = Intent(this, Activity2::class.java)
+            startActivity(intent)
+        }
 
         isDeviceCompatible()
     }
