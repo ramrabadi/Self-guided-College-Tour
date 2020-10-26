@@ -12,11 +12,14 @@ import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.net.wifi.rtt.WifiRttManager
 import android.os.Bundle
+import android.widget.Button
+import android.content.Intent;
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+
 import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
@@ -64,6 +67,13 @@ class MainActivity : AppCompatActivity() {
             "Camera",
             ACCESS_CAMERA_RQ
        )
+
+          // Init of Video button temp
+        val button = findViewById<Button>(R.id.button)
+        button.setOnClickListener{
+            val intent = Intent(this, Activity2::class.java)
+            startActivity(intent)
+        }
 
         isDeviceCompatible()
 
