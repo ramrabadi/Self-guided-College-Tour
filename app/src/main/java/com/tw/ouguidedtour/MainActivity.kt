@@ -2,14 +2,19 @@ package com.tw.ouguidedtour
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.content.Intent;
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Timber.i("onCreate Called")
-
+        val button = findViewById<Button>(R.id.button)
+        button.setOnClickListener{
+            val intent = Intent(this, Activity2::class.java)
+            startActivity(intent)
+        }
         // Check for wifi permissions
         // Check for gps permissions
 
