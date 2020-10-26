@@ -13,10 +13,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import timber.log.Timber
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 
 
 class MainActivity : AppCompatActivity() {
 
+
+    private var locationManager : LocationManager? = null
     private val ACCESS_FINE_LOCATION_RQ = 101
     private val ACCESS_CAMERA_RQ = 102
     private var mLocationPermissionApproved: Boolean = false
@@ -29,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mWifiManager: WifiManager
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -36,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
         mWifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
 
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+      
         checkForPermissions(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             "Fine Location",
@@ -45,9 +53,23 @@ class MainActivity : AppCompatActivity() {
             android.Manifest.permission.CAMERA,
             "Camera",
             ACCESS_CAMERA_RQ
-        )
+       
 
         isDeviceCompatible()
+
+    }
+
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            //LONGITUDE = location.longitude
+            //LATITUDE = location.latitude
+            //sets whatever var will hold lat & long to value
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
+        
     }
 
     /** Lifecycle Methods **/
