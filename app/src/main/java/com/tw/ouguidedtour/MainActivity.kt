@@ -19,7 +19,11 @@ import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-
+import android.preference.PreferenceManager
+import android.view.View
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.config.Configuration
+import org.osmdroid.views.MapView
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +33,9 @@ class MainActivity : AppCompatActivity() {
     private var mLocationPermissionApproved: Boolean = false
     private var mCameraPermissionApproved: Boolean = false
     private var mWifiEnabled: Boolean = false
+    private var map: MapView? = null
+
+
 
     /** These are for the Checking if Wifi RTT is compatible with the phone **/
     //private var deviceCompatible: Boolean = false
@@ -71,6 +78,17 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, Activity2::class.java)
             startActivity(intent)
         }
+
+        //load osmdroid configuration
+        val ctx = applicationContext
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
+
+        //create the map
+        map = findViewById<View>(R.id.map) as MapView
+        map!!.setTileSource(TileSourceFactory.MAPNIK)
+
+
+
 
         isDeviceCompatible()
     }
@@ -129,6 +147,8 @@ class MainActivity : AppCompatActivity() {
 
 
         // Resume playing video
+
+        map!!.onResume()//resume map updating of ui
     }
 
     override fun onPause() {
@@ -136,6 +156,8 @@ class MainActivity : AppCompatActivity() {
         Timber.i("onPause Called")
 
         // Pause video
+
+        map!!.onPause()//pause updating of map ui
     }
 
     override fun onStop() {
