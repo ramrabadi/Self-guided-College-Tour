@@ -47,6 +47,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".FloorPlan"
+            android:label="FloorPlan"
+
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
