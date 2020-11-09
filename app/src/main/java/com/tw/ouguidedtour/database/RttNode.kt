@@ -1,9 +1,10 @@
 package com.tw.ouguidedtour.database
 
+
 class RttNode {
 
     // The Rssi value of the noe
-    private var rssi: String = ""
+    private var rssi: String = "0"
 
     // The distance from the users phone to the node
     private var distance: Int = 0
@@ -22,6 +23,16 @@ class RttNode {
         {
             this.distance = distance
         }
+    }
+
+    // sets value of rssi
+    fun setRssi(rssi: String) {
+        this.rssi = rssi
+    }
+
+    // sets value of distance
+    fun setDistance(distance: Int) {
+        this.distance = distance
     }
 
     // returns the rssi value
