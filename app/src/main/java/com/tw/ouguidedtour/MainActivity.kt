@@ -19,6 +19,7 @@ import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.preference.PreferenceManager
 import android.view.View
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -50,47 +51,60 @@ class MainActivity : AppCompatActivity() {
 
         mWifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
 
-        // Initialize Camera button
+        // Check if user has Android API 28 or higher
+        if (Build.VERSION.SDK_INT >= 28) {
+            // Initialize Camera button
+            val scanQRCode: Button = findViewById(R.id.QRCodeButton)
+            // Open Camera
+            scanQRCode.setOnClickListener {
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(cameraIntent, ACCESS_CAMERA_RQ)
+            }
 
-        val scanQRCode: Button = findViewById(R.id.QRCodeButton)
-        // Open Camera
-        scanQRCode.setOnClickListener {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(cameraIntent, ACCESS_CAMERA_RQ)
+            locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+
+            checkForPermissions(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                "Fine Location",
+                ACCESS_FINE_LOCATION_RQ
+            )
+            checkForPermissions(
+                android.Manifest.permission.CAMERA,
+                "Camera",
+                ACCESS_CAMERA_RQ
+            )
+
+            // Init of Video button temp
+            val button = findViewById<Button>(R.id.VideoButton)
+            button.setOnClickListener {
+                val intent = Intent(this, Activity2::class.java)
+                startActivity(intent)
+            }
+
+            // Display Floor Plan Button
+            val floorPlanButton: Button = findViewById(R.id.FloorPlanButton)
+            floorPlanButton.setOnClickListener {
+                val intent = Intent(this, FloorPlan::class.java)
+                startActivity(intent)
+            }
+
+            //load osmdroid configuration
+            val ctx = applicationContext
+            Configuration.getInstance()
+                .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
+
+            //create the map
+            map = findViewById<View>(R.id.map) as MapView
+            map!!.setTileSource(TileSourceFactory.MAPNIK)
+
+
+            isDeviceCompatible()
+
+         // If Android API is below 28, display floor plan
+        } else {
+            val below28API = Intent(this, FloorPlan::class.java)
+            startActivity(below28API)
         }
-
-        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
-      
-        checkForPermissions(
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            "Fine Location",
-            ACCESS_FINE_LOCATION_RQ
-        )
-        checkForPermissions(
-            android.Manifest.permission.CAMERA,
-            "Camera",
-            ACCESS_CAMERA_RQ
-        )
-
-        // Init of Video button temp
-        val button = findViewById<Button>(R.id.VideoButton)
-        button.setOnClickListener{
-            val intent = Intent(this, Activity2::class.java)
-            startActivity(intent)
-        }
-
-        //load osmdroid configuration
-        val ctx = applicationContext
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
-
-        //create the map
-        map = findViewById<View>(R.id.map) as MapView
-        map!!.setTileSource(TileSourceFactory.MAPNIK)
-
-
-
-
-        isDeviceCompatible()
     }
 
     private val locationListener: LocationListener = object : LocationListener {
