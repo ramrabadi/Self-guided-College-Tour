@@ -1,15 +1,18 @@
 package com.tw.ouguidedtour
 
 
-import android.content.Intent
-import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.Button
 import android.Manifest.permission
-import android.content.*
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.net.wifi.WifiManager
-import android.net.wifi.rtt.WifiRttManager
+import android.os.Bundle
+import android.preference.PreferenceManager
+import android.provider.MediaStore
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +27,12 @@ import android.preference.PreferenceManager
 import android.view.View
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -88,14 +96,33 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
+        //create the map
+        map = findViewById<View>(R.id.map) as MapView
+        map!!.setUseDataConnection(true)
+        map!!.setTileSource(TileSourceFactory.MAPNIK)
+        map!!.setMultiTouchControls(true)
+
+        val mapController = map!!.controller
+        /* Use this for default location of Stocker Center if location Tracking is not being used
+        mapController.setZoom(18)
+        val startPoint = GeoPoint(39.32574,-82.10572)
+        mapController.setCenter(startPoint)
+        */
+        //enable location tracking
+        val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
+        mLocationOverlay.enableMyLocation()
+        mLocationOverlay.enableFollowLocation()
+        mLocationOverlay.runOnFirstFix{runOnUiThread {
+            mapController.animateTo(mLocationOverlay.myLocation)
+            mapController.setZoom(18)
+        }}
+        map!!.overlays.add(mLocationOverlay)
+
             //load osmdroid configuration
             val ctx = applicationContext
             Configuration.getInstance()
                 .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
 
-            //create the map
-            map = findViewById<View>(R.id.map) as MapView
-            map!!.setTileSource(TileSourceFactory.MAPNIK)
 
 
             isDeviceCompatible()
@@ -107,18 +134,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val locationListener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            //LONGITUDE = location.longitude
-            //LATITUDE = location.latitude
-            //sets whatever var will hold lat & long to value
-        }
 
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
-        
-    }
 
     /** Lifecycle Methods **/
 
