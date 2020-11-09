@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
             // Display Floor Plan Button
             val floorPlanButton: Button = findViewById(R.id.FloorPlanButton)
             floorPlanButton.setOnClickListener {
+                // Display Floor Plan
                 val intent = Intent(this, FloorPlan::class.java)
                 startActivity(intent)
             }
