@@ -33,6 +33,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation fileTree(dir: "libs", include: ["*.aar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -44,6 +45,7 @@ dependencies {
     implementation "org.jetbrains.exposed:exposed-dao:$exposed_version"
     implementation "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
     implementation "com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre7"
+
     // Life Cycle Dependencies
     def lifecycle_version = "2.2.0"
     // ViewModel
@@ -61,4 +63,5 @@ dependencies {
     // Navigation Dependencies
     implementation 'org.osmdroid:osmdroid-android:6.1.8'
     implementation 'org.osmdroid:osmdroid-wms:6.1.8'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 }
