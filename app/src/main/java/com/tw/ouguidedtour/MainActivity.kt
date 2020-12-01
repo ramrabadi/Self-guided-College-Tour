@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
 import android.preference.PreferenceManager
-import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -23,6 +22,12 @@ import androidx.core.content.ContextCompat
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
+import timber.log.Timber
+import android.location.Location
+import android.location.LocationListener
+import android.os.Build
+import kotlinx.android.synthetic.main.activity_main.*
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -32,7 +37,6 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,25 +72,10 @@ class MainActivity : AppCompatActivity() {
         // Check if user has Android API 28 or higher
         if (Build.VERSION.SDK_INT >= 28) {
             // Initialize Camera button
-            val scanQRCode: Button = findViewById(R.id.QRCodeButton)
-            // Open Camera
-            scanQRCode.setOnClickListener {
-                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(cameraIntent, ACCESS_CAMERA_RQ)
-            }
+
 
             locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
 
-            checkForPermissions(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                "Fine Location",
-                ACCESS_FINE_LOCATION_RQ
-            )
-            checkForPermissions(
-                android.Manifest.permission.CAMERA,
-                "Camera",
-                ACCESS_CAMERA_RQ
-            )
 
             // Init of Video button temp
             val button = findViewById<Button>(R.id.VideoButton)
@@ -148,25 +137,40 @@ class MainActivity : AppCompatActivity() {
         }}
         map!!.overlays.add(mLocationOverlay)
         map!!.invalidate()//refresh the map to apply changes
+
             //load osmdroid configuration
             val ctx = applicationContext
             Configuration.getInstance()
                 .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
 
 
+            //isDeviceCompatible()
 
 
-
-
-
-            isDeviceCompatible()
-
-         // If Android API is below 28, display floor plan
+            // If Android API is below 28, display floor plan
         } else {
             val below28API = Intent(this, FloorPlan::class.java)
             startActivity(below28API)
         }
+        val mainMenuButton: Button = findViewById(R.id.MainMenuButton)
+        mainMenuButton.setOnClickListener {
+            val dataIntent = Intent(this, MainMenuActivity::class.java)
+            startActivity(dataIntent)
+
+        }
+        checkForPermissions(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            "Fine Location",
+            ACCESS_FINE_LOCATION_RQ
+        )
+        checkForPermissions(
+            android.Manifest.permission.CAMERA,
+            "Camera",
+            ACCESS_CAMERA_RQ
+        )
+
     }
+
 
 
 
