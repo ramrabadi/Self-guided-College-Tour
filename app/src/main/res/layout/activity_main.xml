@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#2AAC2C"
+        android:background="#00694e"
         android:orientation="horizontal" >
 
 

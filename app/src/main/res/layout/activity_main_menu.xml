@@ -5,7 +5,7 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#2AAC2C"
+    android:background="#00694e"
     tools:context=".MainMenuActivity">
 
     <ImageView
@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/logo"
+        android:src="@drawable/ohio"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -26,7 +26,7 @@
         android:layout_width="139dp"
         android:layout_height="56dp"
         android:layout_gravity="center"
-        android:text="Floor Plan"
+        android:text="See Map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
