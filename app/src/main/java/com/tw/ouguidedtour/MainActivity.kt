@@ -10,7 +10,6 @@ import android.location.LocationManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -22,13 +21,13 @@ import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
 import android.os.Build
+import kotlinx.android.synthetic.main.activity_main.*
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import com.google.zxing.integration.android.IntentIntegrator
 
 class MainActivity : AppCompatActivity() {
 
@@ -58,25 +57,10 @@ class MainActivity : AppCompatActivity() {
         // Check if user has Android API 28 or higher
         if (Build.VERSION.SDK_INT >= 28) {
             // Initialize Camera button
-            val scanQRCode: Button = findViewById(R.id.QRCodeButton)
-            // Open Camera
-            scanQRCode.setOnClickListener {
-                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(cameraIntent, ACCESS_CAMERA_RQ)
-            }
+
 
             locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
 
-            checkForPermissions(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                "Fine Location",
-                ACCESS_FINE_LOCATION_RQ
-            )
-            checkForPermissions(
-                android.Manifest.permission.CAMERA,
-                "Camera",
-                ACCESS_CAMERA_RQ
-            )
 
             // Init of Video button temp
             val button = findViewById<Button>(R.id.VideoButton)
@@ -93,27 +77,29 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-        //create the map
-        map = findViewById<View>(R.id.map) as MapView
-        map!!.setUseDataConnection(true)
-        map!!.setTileSource(TileSourceFactory.MAPNIK)
-        map!!.setMultiTouchControls(true)
+            //create the map
+            map = findViewById<View>(R.id.map) as MapView
+            map!!.setUseDataConnection(true)
+            map!!.setTileSource(TileSourceFactory.MAPNIK)
+            map!!.setMultiTouchControls(true)
 
-        val mapController = map!!.controller
-        /* Use this for default location of Stocker Center if location Tracking is not being used
+            val mapController = map!!.controller
+            /* Use this for default location of Stocker Center if location Tracking is not being used
         mapController.setZoom(18)
         val startPoint = GeoPoint(39.32574,-82.10572)
         mapController.setCenter(startPoint)
         */
-        //enable location tracking
-        val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
-        mLocationOverlay.enableMyLocation()
-        mLocationOverlay.enableFollowLocation()
-        mLocationOverlay.runOnFirstFix{runOnUiThread {
-            mapController.animateTo(mLocationOverlay.myLocation)
-            mapController.setZoom(18)
-        }}
-        map!!.overlays.add(mLocationOverlay)
+            //enable location tracking
+            val mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
+            mLocationOverlay.enableMyLocation()
+            mLocationOverlay.enableFollowLocation()
+            mLocationOverlay.runOnFirstFix {
+                runOnUiThread {
+                    mapController.animateTo(mLocationOverlay.myLocation)
+                    mapController.setZoom(18)
+                }
+            }
+            map!!.overlays.add(mLocationOverlay)
 
             //load osmdroid configuration
             val ctx = applicationContext
@@ -121,10 +107,9 @@ class MainActivity : AppCompatActivity() {
                 .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
 
 
+            //isDeviceCompatible()
 
-            isDeviceCompatible()
-
-         // If Android API is below 28, display floor plan
+            // If Android API is below 28, display floor plan
         } else {
             val below28API = Intent(this, FloorPlan::class.java)
             startActivity(below28API)
@@ -133,6 +118,18 @@ class MainActivity : AppCompatActivity() {
         mainMenuButton.setOnClickListener {
             val dataIntent = Intent(this, MainMenuActivity::class.java)
             startActivity(dataIntent)
+
+        }
+        checkForPermissions(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            "Fine Location",
+            ACCESS_FINE_LOCATION_RQ
+        )
+        checkForPermissions(
+            android.Manifest.permission.CAMERA,
+            "Camera",
+            ACCESS_CAMERA_RQ
+        )
 
     }
 

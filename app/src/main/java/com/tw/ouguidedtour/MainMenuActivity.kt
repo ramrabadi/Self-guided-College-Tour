@@ -6,29 +6,27 @@ import android.provider.MediaStore
 import android.widget.Button
 import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 
 class MainMenuActivity : AppCompatActivity() {
 
-    private val ACCESS_CAMERA_RQ = 102
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
         val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
         val mapButton: Button = findViewById(R.id.floorPlanButton)
-        scanQRCode.setOnClickListener {
+
+        mapButton.setOnClickListener {
             val dataIntent = Intent(this, MainActivity::class.java)
             startActivity(dataIntent)
 
 
         }
-
         // Open Camera
         scanQRCode.setOnClickListener {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(cameraIntent, ACCESS_CAMERA_RQ)
+            startActivity(cameraIntent)
             val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
             intentIntegrator.setBeepEnabled(false)
             intentIntegrator.setCameraId(0)
