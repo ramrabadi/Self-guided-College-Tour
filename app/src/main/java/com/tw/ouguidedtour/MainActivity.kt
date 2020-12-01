@@ -8,7 +8,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
 import android.preference.PreferenceManager
 import android.view.View
 import android.widget.Button
@@ -17,6 +19,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.osmdroid.bonuspack.routing.OSRMRoadManager
+import org.osmdroid.bonuspack.routing.Road
+import org.osmdroid.bonuspack.routing.RoadManager
 import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
@@ -24,10 +29,14 @@ import android.os.Build
 import kotlinx.android.synthetic.main.activity_main.*
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +50,10 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
+
+
     /** These are for the Checking if Wifi RTT is compatible with the phone **/
     //private var deviceCompatible: Boolean = false
     //private lateinit var mWifiRttManager: WifiRttManager
@@ -51,6 +64,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.i("onCreate Called")
+
+
 
         mWifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
 
@@ -77,29 +92,51 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            //create the map
-            map = findViewById<View>(R.id.map) as MapView
-            map!!.setUseDataConnection(true)
-            map!!.setTileSource(TileSourceFactory.MAPNIK)
-            map!!.setMultiTouchControls(true)
+        val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+        //create the map
+        map = findViewById<View>(R.id.map) as MapView
+        map!!.setUseDataConnection(true)
+        map!!.setTileSource(TileSourceFactory.MAPNIK)
+        map!!.setMultiTouchControls(true)
 
-            val mapController = map!!.controller
-            /* Use this for default location of Stocker Center if location Tracking is not being used
-        mapController.setZoom(18)
+        val mapController = map!!.controller
+
+        //mapController.setZoom(18)
         val startPoint = GeoPoint(39.32574,-82.10572)
         mapController.setCenter(startPoint)
-        */
-            //enable location tracking
-            val mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
-            mLocationOverlay.enableMyLocation()
-            mLocationOverlay.enableFollowLocation()
-            mLocationOverlay.runOnFirstFix {
-                runOnUiThread {
-                    mapController.animateTo(mLocationOverlay.myLocation)
-                    mapController.setZoom(18)
-                }
-            }
-            map!!.overlays.add(mLocationOverlay)
+
+            val startMarker =
+                Marker(map)
+            startMarker.position = startPoint
+            startMarker.setAnchor(
+                Marker.ANCHOR_CENTER,
+                Marker.ANCHOR_BOTTOM
+            )
+            startMarker.setTitle("Stocker Center")
+            map!!.overlays.add(startMarker)
+
+        //enable location tracking
+        val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
+        mLocationOverlay.enableMyLocation()
+        mLocationOverlay.enableFollowLocation()
+
+        //enable navigation
+        val roadManager: RoadManager = OSRMRoadManager(this)
+        val waypoints = ArrayList<GeoPoint>()
+
+        mLocationOverlay.runOnFirstFix{runOnUiThread {
+            mapController.animateTo(mLocationOverlay.myLocation)
+            mapController.setZoom(18)
+            val currentloc = mLocationOverlay.myLocation
+            waypoints.add(currentloc)
+            waypoints.add(startPoint)
+            val road: Road = roadManager.getRoad(waypoints)
+            val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road)
+            map!!.overlays.add(roadOverlay)
+        }}
+        map!!.overlays.add(mLocationOverlay)
+        map!!.invalidate()//refresh the map to apply changes
 
             //load osmdroid configuration
             val ctx = applicationContext
@@ -108,6 +145,7 @@ class MainActivity : AppCompatActivity() {
 
 
             //isDeviceCompatible()
+
 
             // If Android API is below 28, display floor plan
         } else {
@@ -354,6 +392,20 @@ class MainActivity : AppCompatActivity() {
 //                IntentFilter(WifiRttManager.ACTION_WIFI_RTT_STATE_CHANGED)
 //            )
 //        }
+    }
+
+    /**Checks if location is close enough to stocker for rtt to enable
+     * Place function to enable RTT in here
+     * Currently set for 100 m from enable location
+     */
+    private fun enableRttCheck() {
+        val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
+        mLocationOverlay.enableMyLocation()
+        val enableLoc = GeoPoint(39.32574,-82.10572)//rough coordinates for Stocker Center Entrance
+
+        if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 100.0 ) {
+            //function to enable RTT here
+        }
     }
 
 }
