@@ -28,7 +28,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-
+import com.google.zxing.integration.android.IntentIntegrator
 
 class MainActivity : AppCompatActivity() {
 
@@ -129,7 +129,13 @@ class MainActivity : AppCompatActivity() {
             val below28API = Intent(this, FloorPlan::class.java)
             startActivity(below28API)
         }
+        val mainMenuButton: Button = findViewById(R.id.MainMenuButton)
+        mainMenuButton.setOnClickListener {
+            val dataIntent = Intent(this, MainMenuActivity::class.java)
+            startActivity(dataIntent)
+
     }
+
 
 
 

@@ -17,7 +17,7 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 // Showing splash screen with a timer.
-                Intent i = new Intent(SplashScreen.this, MainActivity.class);
+                Intent i = new Intent(SplashScreen.this, MainMenuActivity.class);
                 startActivity(i);
                 finish();
             }
