@@ -25,18 +25,15 @@ import org.osmdroid.bonuspack.routing.RoadManager
 import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
-import android.os.Build
 import kotlinx.android.synthetic.main.activity_main.*
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
