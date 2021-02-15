@@ -12,15 +12,15 @@ When you have an account, you will either create a new "Key store path" or use a
 
 The rest of the information will be related to your account or passwords for the new APK you just built.
 
-### New App
-1: Add a title and description of the app
-2: Add Screen-shots of the application in use
-3: Determine Rating of the app (age rating)
-4: Select the category the app falls under, in this case mostlikley "navigation"
-5: Add Privacy policy rules
-6: Upload APK file that you have already built
+## New App
+- Add a title and description of the app
+- Add Screen-shots of the application in use
+- Determine Rating of the app (age rating)
+- Select the category the app falls under, in this case mostlikley "navigation"
+- Add Privacy policy rules
+- Upload APK file that you have already built
 
-### Updating Existing App
-1: Add Update information
-2: Upload new APK you just built
-3: Make changes to privacy policy or description of the app
+## Updating Existing App
+- Add Update information
+- Upload new APK you just built
+- Make changes to privacy policy or description of the app
