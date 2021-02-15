@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         val mapController = map!!.controller
 
         //mapController.setZoom(18)
-        val startPoint = GeoPoint(39.32574,-82.10572)
+        val startPoint = GeoPoint(39.3260125,-82.1066672)
         mapController.setCenter(startPoint)
 
             val startMarker =
