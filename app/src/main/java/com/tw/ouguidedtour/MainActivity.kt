@@ -37,6 +37,9 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
+import android.provider.MediaStore
+import com.google.zxing.integration.android.IntentIntegrator
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -168,6 +171,12 @@ class MainActivity : AppCompatActivity() {
             "Camera",
             ACCESS_CAMERA_RQ
         )
+
+
+
+
+
+        }
 
     }
 
