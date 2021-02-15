@@ -24,3 +24,12 @@ The rest of the information will be related to your account or passwords for the
 - Add Update information
 - Upload new APK you just built
 - Make changes to privacy policy or description of the app
+
+
+## XML web page (TBD)
+We are working on the final format for this, no code should have to be changed for this.  
+
+## QR codes generation (TBD)
+
+For this we still are trying to make it so that the owner can generate a qr code for a stop(i.e. a location) and also have it so that if the user doesn't have the app already installed then it will take them to the Play Store.
+
