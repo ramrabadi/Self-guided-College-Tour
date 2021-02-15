@@ -20,7 +20,22 @@ class MainMenuActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
         if (checkPermission()) {
-
+            val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
+            val mapButton: Button = findViewById(R.id.floorPlanButton)
+            mapButton.setOnClickListener {
+                val dataIntent = Intent(this, MainActivity::class.java)
+                startActivity(dataIntent)
+            }
+            scanQRCode.setOnClickListener {
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivity(cameraIntent)
+                val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
+                intentIntegrator.setBeepEnabled(false)
+                intentIntegrator.setCameraId(0)
+                intentIntegrator.setPrompt("SCAN")
+                intentIntegrator.setBarcodeImageEnabled(false)
+                intentIntegrator.initiateScan()
+            }
         } else {
             requestPermission()
         }
