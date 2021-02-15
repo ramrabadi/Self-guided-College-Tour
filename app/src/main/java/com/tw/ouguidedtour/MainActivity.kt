@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
-import timber.log.Timber
 import android.location.Location
 import android.location.LocationListener
 import kotlinx.android.synthetic.main.activity_main.*
@@ -34,6 +33,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,12 +44,6 @@ class MainActivity : AppCompatActivity() {
     private var mCameraPermissionApproved: Boolean = false
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
-
-
-
-
-
-
 
     /** These are for the Checking if Wifi RTT is compatible with the phone **/
     //private var deviceCompatible: Boolean = false
@@ -177,6 +171,10 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         Timber.i("onStart Called")
 
+        mCameraPermissionApproved =
+            (ActivityCompat.checkSelfPermission(this, permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED)
+
         // Start getting GPS location if outside
 
         // Start getting Wifi RTT ranging if inside
@@ -262,7 +260,7 @@ class MainActivity : AppCompatActivity() {
      *                  for this permission to be granted.
      *
      */
-    private fun checkForPermissions(permission: String, name: String, requestCode: Int) {
+    public fun checkForPermissions(permission: String, name: String, requestCode: Int) {
         when {
             ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED -> {
                 Toast.makeText(applicationContext, "$name permission granted", Toast.LENGTH_SHORT).show()
