@@ -23,11 +23,7 @@ import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
 import timber.log.Timber
-import android.location.Location
-import android.location.LocationListener
-import android.os.Build
 import kotlinx.android.synthetic.main.activity_main.*
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -36,9 +32,6 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import timber.log.Timber
-import android.provider.MediaStore
-import com.google.zxing.integration.android.IntentIntegrator
 
 
 class MainActivity : AppCompatActivity() {
@@ -176,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        }
+
 
     }
 
@@ -412,9 +405,12 @@ class MainActivity : AppCompatActivity() {
         mLocationOverlay.enableMyLocation()
         val enableLoc = GeoPoint(39.32574,-82.10572)//rough coordinates for Stocker Center Entrance
 
+        /*
         if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 100.0 ) {
             //function to enable RTT here
         }
+
+         */
     }
 
 }
