@@ -10,13 +10,10 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.journeyapps.barcodescanner.CaptureActivity
-
-class MainMenuActivity : AppCompatActivity() {
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
-
+import com.journeyapps.barcodescanner.CaptureActivity
 
 class MainMenuActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle ? ) {
@@ -31,33 +28,24 @@ class MainMenuActivity: AppCompatActivity() {
             }
             scanQRCode.setOnClickListener {
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivity(cameraIntent)
+                //startActivity(cameraIntent)
                 val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
                 intentIntegrator.setBeepEnabled(false)
                 intentIntegrator.setCameraId(0)
+                intentIntegrator.captureActivity = CaptureActivity::class.java
                 intentIntegrator.setPrompt("SCAN")
-                intentIntegrator.setBarcodeImageEnabled(false)
+                intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
                 intentIntegrator.initiateScan()
             }
         } else {
             requestPermission()
         }
-        // Open Camera
-        scanQRCode.setOnClickListener {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            //startActivity(cameraIntent)
-            val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
-            intentIntegrator.setBeepEnabled(false)
-            intentIntegrator.setCameraId(0)
-            intentIntegrator.captureActivity = CaptureActivity::class.java
-            intentIntegrator.setPrompt("SCAN")
-            intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-            intentIntegrator.initiateScan()
+
     }
 
     // Sends QR data to Database activity
     override fun onActivityResult(requestCode: Int, resultCode: Int,
-        data: Intent ?
+                                  data: Intent ?
     ) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
@@ -88,34 +76,12 @@ class MainMenuActivity: AppCompatActivity() {
             PERMISSION_REQUEST_CODE)
     }
 
-        //Sends QR data to Database activity
-        override fun onActivityResult(
-            requestCode: Int,
-            resultCode: Int,
-            data: Intent?
-        ) {
-            val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-            //super.onActivityResult(requestCode, resultCode, data)
-            if (result != null) {
-                if (result.contents == null) {
-                    Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
-                } else {
-                    val s: String = result.contents;
-                    val dataIntent = Intent(this, DataActivity::class.java)
-                    dataIntent.putExtra("QRData", s)
-                    startActivity(dataIntent)
-                }
-            } else {
-                Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
-                super.onActivityResult(requestCode, resultCode, data)
-
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array <String>, grantResults: IntArray) {
         when(requestCode) {
             PERMISSION_REQUEST_CODE ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(applicationContext, "Camera Permission Granted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "Camera Permission Granted", Toast.LENGTH_SHORT).show()
                     val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
                     val mapButton: Button = findViewById(R.id.floorPlanButton)
                     mapButton.setOnClickListener {
@@ -132,20 +98,20 @@ class MainMenuActivity: AppCompatActivity() {
                         intentIntegrator.setBarcodeImageEnabled(false)
                         intentIntegrator.initiateScan()
                     }
-            }
-            else {
-                Toast.makeText(applicationContext, "Permission Denied",
-                    Toast.LENGTH_SHORT)
-                    .show()
-                if (ContextCompat.checkSelfPermission(
-                        this, Manifest.permission.CAMERA) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                    showMessageOKCancel("You need to allow access Camera Permissions to scan a QR code",
-                        DialogInterface.OnClickListener {
-                            dialog, which-> requestPermission()
-                        })
                 }
-            }
+                else {
+                    Toast.makeText(applicationContext, "Permission Denied",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                    if (ContextCompat.checkSelfPermission(
+                            this, Manifest.permission.CAMERA) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                        showMessageOKCancel("You need to allow access Camera Permissions to scan a QR code",
+                            DialogInterface.OnClickListener {
+                                    dialog, which-> requestPermission()
+                            })
+                    }
+                }
         }
     }
 
