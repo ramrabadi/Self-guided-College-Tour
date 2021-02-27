@@ -10,6 +10,9 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.journeyapps.barcodescanner.CaptureActivity
+
+class MainMenuActivity : AppCompatActivity() {
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
@@ -39,6 +42,17 @@ class MainMenuActivity: AppCompatActivity() {
         } else {
             requestPermission()
         }
+        // Open Camera
+        scanQRCode.setOnClickListener {
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            //startActivity(cameraIntent)
+            val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
+            intentIntegrator.setBeepEnabled(false)
+            intentIntegrator.setCameraId(0)
+            intentIntegrator.captureActivity = CaptureActivity::class.java
+            intentIntegrator.setPrompt("SCAN")
+            intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
+            intentIntegrator.initiateScan()
     }
 
     // Sends QR data to Database activity
@@ -73,6 +87,28 @@ class MainMenuActivity: AppCompatActivity() {
             arrayOf<String>(Manifest.permission.CAMERA),
             PERMISSION_REQUEST_CODE)
     }
+
+        //Sends QR data to Database activity
+        override fun onActivityResult(
+            requestCode: Int,
+            resultCode: Int,
+            data: Intent?
+        ) {
+            val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+            //super.onActivityResult(requestCode, resultCode, data)
+            if (result != null) {
+                if (result.contents == null) {
+                    Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
+                } else {
+                    val s: String = result.contents;
+                    val dataIntent = Intent(this, DataActivity::class.java)
+                    dataIntent.putExtra("QRData", s)
+                    startActivity(dataIntent)
+                }
+            } else {
+                Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
+                super.onActivityResult(requestCode, resultCode, data)
+
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array <String>, grantResults: IntArray) {
