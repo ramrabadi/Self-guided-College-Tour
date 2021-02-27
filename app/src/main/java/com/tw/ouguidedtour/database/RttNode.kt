@@ -7,11 +7,11 @@ class RttNode {
     private var rssi: String = "0"
 
     // The distance from the users phone to the node
-    private var distance: Int = 0
+    private var distance: Float = 0.0f
 
 
     // Creates a object which is set with the rssi value of the noe and then the distance.
-    fun create (rssi: String, distance: Int) {
+    fun create (rssi: String, distance: Float) {
         // Makes sure rssi receives a value
         if (rssi != "")
         {
@@ -31,7 +31,7 @@ class RttNode {
     }
 
     // sets value of distance
-    fun setDistance(distance: Int) {
+    fun setDistance(distance: Float) {
         this.distance = distance
     }
 
@@ -41,7 +41,7 @@ class RttNode {
     }
 
     // returns the distance
-    fun getDistance(): Int {
+    fun getDistance(): Float {
         return distance
     }
 }

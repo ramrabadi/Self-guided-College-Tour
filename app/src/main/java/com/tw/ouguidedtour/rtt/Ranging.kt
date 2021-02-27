@@ -35,9 +35,9 @@ fun getThreeClosestNodes(nodes: List<RttNode>): MutableList<RttNode>  {
         return userLocation
     }
 
-    userLocation[0].setDistance(Int.MAX_VALUE)
-    userLocation[1].setDistance(Int.MAX_VALUE)
-    userLocation[2].setDistance(Int.MAX_VALUE)
+    userLocation[0].setDistance(Float.MAX_VALUE)
+    userLocation[1].setDistance(Float.MAX_VALUE)
+    userLocation[2].setDistance(Float.MAX_VALUE)
     for (node in nodes) {
         if (userLocation[0].getDistance() > node.getDistance() ) {
 
