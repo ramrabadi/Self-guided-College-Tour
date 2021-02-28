@@ -22,13 +22,18 @@ class MainMenuActivity: AppCompatActivity() {
         if (checkPermission()) {
             val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
             val mapButton: Button = findViewById(R.id.floorPlanButton)
+            val tutorialButton: Button = findViewById(R.id.tutorialButton)
             mapButton.setOnClickListener {
                 val dataIntent = Intent(this, MainActivity::class.java)
                 startActivity(dataIntent)
             }
+            tutorialButton.setOnClickListener {
+                val tutorialIntent = Intent(this, TutorialActivity::class.java)
+                startActivity(tutorialIntent)
+            }
             scanQRCode.setOnClickListener {
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                //startActivity(cameraIntent)
+                startActivity(cameraIntent)
                 val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
                 intentIntegrator.setBeepEnabled(false)
                 intentIntegrator.setCameraId(0)
@@ -43,20 +48,25 @@ class MainMenuActivity: AppCompatActivity() {
 
     }
 
-    // Sends QR data to Database activity
-    override fun onActivityResult(requestCode: Int, resultCode: Int,
-                                  data: Intent ?
+    //Sends QR data to Database activity
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
     ) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents == null) {
                 Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             } else {
+                val s: String = result.contents;
                 val dataIntent = Intent(this, DataActivity::class.java)
-                dataIntent.putExtra("QRData", result.contents)
+                dataIntent.putExtra("QRData", s)
                 startActivity(dataIntent)
             }
         } else {
+            Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
@@ -84,9 +94,14 @@ class MainMenuActivity: AppCompatActivity() {
                     Toast.makeText(applicationContext, "Camera Permission Granted", Toast.LENGTH_SHORT).show()
                     val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
                     val mapButton: Button = findViewById(R.id.floorPlanButton)
+                    val tutorialButton: Button = findViewById(R.id.tutorialButton)
                     mapButton.setOnClickListener {
                         val dataIntent = Intent(this, MainActivity::class.java)
                         startActivity(dataIntent)
+                    }
+                    tutorialButton.setOnClickListener {
+                        val tutorialIntent = Intent(this, TutorialActivity::class.java)
+                        startActivity(tutorialIntent)
                     }
                     scanQRCode.setOnClickListener {
                         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -94,8 +109,9 @@ class MainMenuActivity: AppCompatActivity() {
                         val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
                         intentIntegrator.setBeepEnabled(false)
                         intentIntegrator.setCameraId(0)
+                        intentIntegrator.captureActivity = CaptureActivity::class.java
                         intentIntegrator.setPrompt("SCAN")
-                        intentIntegrator.setBarcodeImageEnabled(false)
+                        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
                         intentIntegrator.initiateScan()
                     }
                 }
@@ -111,9 +127,12 @@ class MainMenuActivity: AppCompatActivity() {
                                     dialog, which-> requestPermission()
                             })
                     }
+
                 }
+
         }
     }
+
 
     private fun showMessageOKCancel(message: String, okListener: DialogInterface.OnClickListener) {
         AlertDialog.Builder(this@MainMenuActivity)
