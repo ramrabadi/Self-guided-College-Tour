@@ -23,10 +23,8 @@ import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
 import timber.log.Timber
-import android.location.Location
-import android.location.LocationListener
-import kotlinx.android.synthetic.main.activity_main.*
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -83,19 +81,19 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-        val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
-        //create the map
-        map = findViewById<View>(R.id.map) as MapView
-        map!!.setUseDataConnection(true)
-        map!!.setTileSource(TileSourceFactory.MAPNIK)
-        map!!.setMultiTouchControls(true)
+            val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
+            //create the map
+            map = findViewById<View>(R.id.map) as MapView
+            map!!.setUseDataConnection(true)
+            map!!.setTileSource(TileSourceFactory.MAPNIK)
+            map!!.setMultiTouchControls(true)
 
-        val mapController = map!!.controller
+            val mapController = map!!.controller
 
-        //mapController.setZoom(18)
-        val startPoint = GeoPoint(39.3260125,-82.1066672)
-        mapController.setCenter(startPoint)
+            //mapController.setZoom(18)
+            val startPoint = GeoPoint(39.3260125,-82.1066672)
+            mapController.setCenter(startPoint)
 
             val startMarker =
                 Marker(map)
@@ -107,27 +105,27 @@ class MainActivity : AppCompatActivity() {
             startMarker.setTitle("Stocker Center")
             map!!.overlays.add(startMarker)
 
-        //enable location tracking
-        val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
-        mLocationOverlay.enableMyLocation()
-        mLocationOverlay.enableFollowLocation()
+            //enable location tracking
+            val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
+            mLocationOverlay.enableMyLocation()
+            mLocationOverlay.enableFollowLocation()
 
-        //enable navigation
-        val roadManager: RoadManager = OSRMRoadManager(this)
-        val waypoints = ArrayList<GeoPoint>()
+            //enable navigation
+            val roadManager: RoadManager = OSRMRoadManager(this)
+            val waypoints = ArrayList<GeoPoint>()
 
-        mLocationOverlay.runOnFirstFix{runOnUiThread {
-            mapController.animateTo(mLocationOverlay.myLocation)
-            mapController.setZoom(18)
-            val currentloc = mLocationOverlay.myLocation
-            waypoints.add(currentloc)
-            waypoints.add(startPoint)
-            val road: Road = roadManager.getRoad(waypoints)
-            val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road)
-            map!!.overlays.add(roadOverlay)
-        }}
-        map!!.overlays.add(mLocationOverlay)
-        map!!.invalidate()//refresh the map to apply changes
+            mLocationOverlay.runOnFirstFix{runOnUiThread {
+                mapController.animateTo(mLocationOverlay.myLocation)
+                mapController.setZoom(18)
+                val currentloc = mLocationOverlay.myLocation
+                waypoints.add(currentloc)
+                waypoints.add(startPoint)
+                val road: Road = roadManager.getRoad(waypoints)
+                val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road)
+                map!!.overlays.add(roadOverlay)
+            }}
+            map!!.overlays.add(mLocationOverlay)
+            map!!.invalidate()//refresh the map to apply changes
 
             //load osmdroid configuration
             val ctx = applicationContext
@@ -413,5 +411,4 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
-
 
