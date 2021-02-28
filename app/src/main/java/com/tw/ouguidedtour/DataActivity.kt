@@ -34,7 +34,6 @@ class DataActivity : AppCompatActivity() {
             tv.text = str
             //tv.setT
         }
-        
         val mainMenuButton: Button = findViewById(R.id.mainMenuButton)
         mainMenuButton.setOnClickListener {
             val dataIntent = Intent(this, MainMenuActivity::class.java)
@@ -53,7 +52,6 @@ class DataActivity : AppCompatActivity() {
                 }
             }
         }
-
          */
     }
 
