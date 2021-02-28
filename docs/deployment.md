@@ -26,8 +26,61 @@ The rest of the information will be related to your account or passwords for the
 - Make changes to privacy policy or description of the app
 
 
-## XML web page (TBD)
-We are working on the final format for this, no code should have to be changed for this.  
+## JSON File
+
+The Locations don't have to been in order 
+{
+    "Tours": [
+      { // Tour 1
+        "id": "",
+        "name": "",
+        "stops": 2,
+        "Locations": [
+          { // Location 1 of Tour 1
+            "id": "",
+            "name": "",
+            "next_location_id": "",
+            "video_url": "",
+            "description": "",
+            "id_of_tour": ""
+          },
+          { // Location 1 of Tour 1
+            "id": "",
+            "name": "",
+            "next_location_id": "",
+            "video_url": "",
+            "description": "",
+          "id_of_tour": ""
+        }
+      ]
+    },
+    { // This is the second Tour
+      "id": "",
+        "name": "",
+        "stops": 2,
+        "Locations": [
+          { // Location 1 of second Tour
+            "id": "",
+            "name": "",
+            "next_location_id": "",
+            "video_url": "",
+            "description": "",
+            "id_of_tour": ""
+          },
+          { // Location 2 of second Tour
+            "id": "",
+            "name": "",
+            "next_location_id": "",
+            "video_url": "",
+            "description": "",
+          "id_of_tour": ""
+        }
+      ]
+    }
+  ]
+}
+  
+
 
 ## QR codes generation (TBD)
 
