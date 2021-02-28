@@ -28,58 +28,9 @@ The rest of the information will be related to your account or passwords for the
 
 ## JSON File
 
-The Locations don't have to been in order 
-{
-    "Tours": [
-      { // Tour 1
-        "id": "",
-        "name": "",
-        "stops": 2,
-        "Locations": [
-          { // Location 1 of Tour 1
-            "id": "",
-            "name": "",
-            "next_location_id": "",
-            "video_url": "",
-            "description": "",
-            "id_of_tour": ""
-          },
-          { // Location 1 of Tour 1
-            "id": "",
-            "name": "",
-            "next_location_id": "",
-            "video_url": "",
-            "description": "",
-          "id_of_tour": ""
-        }
-      ]
-    },
-    { // This is the second Tour
-      "id": "",
-        "name": "",
-        "stops": 2,
-        "Locations": [
-          { // Location 1 of second Tour
-            "id": "",
-            "name": "",
-            "next_location_id": "",
-            "video_url": "",
-            "description": "",
-            "id_of_tour": ""
-          },
-          { // Location 2 of second Tour
-            "id": "",
-            "name": "",
-            "next_location_id": "",
-            "video_url": "",
-            "description": "",
-          "id_of_tour": ""
-        }
-      ]
-    }
-  ]
-}
-  
+The Locations don't have to been in order. The names are case sensitive and need to be exactly as shown.
+
+![JSON Format](https://i.imgur.com/i23ULpU.png)
 
 
 ## QR codes generation (TBD)
