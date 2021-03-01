@@ -23,6 +23,7 @@ import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
 import timber.log.Timber
+import kotlinx.android.synthetic.main.activity_main.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -43,6 +44,12 @@ class MainActivity : AppCompatActivity() {
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
 
+
+
+
+
+
+
     /** These are for the Checking if Wifi RTT is compatible with the phone **/
     //private var deviceCompatible: Boolean = false
     //private lateinit var mWifiRttManager: WifiRttManager
@@ -56,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        mWifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+        mWifiManager = getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
 
         // Check if user has Android API 28 or higher
         if (Build.VERSION.SDK_INT >= 28) {
@@ -92,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             val mapController = map!!.controller
 
             //mapController.setZoom(18)
-            val startPoint = GeoPoint(39.3260125,-82.1066672)
+            val startPoint = GeoPoint(39.32574,-82.10572)
             mapController.setCenter(startPoint)
 
             val startMarker =
@@ -174,10 +181,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Timber.i("onStart Called")
-
-        mCameraPermissionApproved =
-            (ActivityCompat.checkSelfPermission(this, permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED)
 
         // Start getting GPS location if outside
 
@@ -264,7 +267,7 @@ class MainActivity : AppCompatActivity() {
      *                  for this permission to be granted.
      *
      */
-    public fun checkForPermissions(permission: String, name: String, requestCode: Int) {
+    private fun checkForPermissions(permission: String, name: String, requestCode: Int) {
         when {
             ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED -> {
                 Toast.makeText(applicationContext, "$name permission granted", Toast.LENGTH_SHORT).show()
