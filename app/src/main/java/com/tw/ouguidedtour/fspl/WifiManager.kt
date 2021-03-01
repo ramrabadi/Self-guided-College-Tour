@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.PersistableBundle
@@ -16,11 +15,18 @@ import androidx.lifecycle.Lifecycle
 import kotlin.math.log10
 import kotlin.math.pow
 
+
 class mWifiManager: AppCompatActivity() {
 
     private lateinit var mwifiManager: WifiManager
     private lateinit var mwifiInfo: WifiInfo
     lateinit var results: List<ScanResult>
+
+    /** No bars when value is equal to or lower than this: */
+    private val MIN_RSSI = -100
+
+    /** RSSI is at max bars when value is equal to or higher than this: */
+    private val MAX_RSSI = -55
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
@@ -103,23 +109,23 @@ class mWifiManager: AppCompatActivity() {
     // calculateSignalLevel is deprecated for versions older than 30 SDK, work around needs to been found
     //
     //  We might not need this, unless the phone is on an older SDK
-    //``````````````````````
-    private fun grabSignalLevel(signal: Int): Int {
-        val signalLevel: Int
-//        if (Build.VERSION.SDK_INT >= 30) {
-//            signalLevel = mwifiManager.calculateSignalLevel(signal)
-//        } else {
-//            signalLevel = mwifiManager.calculateSignalLevel(signal, 5)
-//        }
-        if (Build.VERSION.SDK_INT >= 30) {
-            signalLevel = mwifiManager.calculateSignalLevel(signal)
+    //
+    //  Edit: This is potentially one solution to calculate the level of the signal.
+    //  It works in the same way as the deprecated method, but the logic is defined
+    //  in our own method.
+    //````
+    fun grabSignalLevel(rssi: Int, numLevels: Int): Int {
+            if (rssi <= MIN_RSSI) { // No bars, return 0
+            return 0
+        } else if (rssi >= MAX_RSSI) { // Full bars, return the levels - 1
+            return numLevels - 1
         } else {
-            signalLevel = 0
+            // Calculates the level of the signal in the range of 0 to numLevels-1.
+            val inputRange: Int = MAX_RSSI - MIN_RSSI
+            val outputRange = (numLevels - 1).toFloat()
+            return ((rssi - MIN_RSSI) as Float * outputRange / inputRange).toInt()
         }
-
-        return signalLevel
     }
-
     //````````````````````````````
     // Purpose: Free space path loss, finds the distance from an access point to the users device
     //
