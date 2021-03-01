@@ -26,8 +26,12 @@ The rest of the information will be related to your account or passwords for the
 - Make changes to privacy policy or description of the app
 
 
-## XML web page (TBD)
-We are working on the final format for this, no code should have to be changed for this.  
+## JSON File
+
+The Locations don't have to been in order. The names are case sensitive and need to be exactly as shown.
+
+![JSON Format](https://i.imgur.com/omCBDry.png)
+
 
 ## QR codes generation (TBD)
 

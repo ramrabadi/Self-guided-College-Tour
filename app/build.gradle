@@ -47,6 +47,7 @@ dependencies {
     implementation "com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre7"
     implementation 'com.google.zxing:core:3.3.3'
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+    
 
     // Life Cycle Dependencies
     def lifecycle_version = "2.2.0"

@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
-
+import com.journeyapps.barcodescanner.CaptureActivity
 
 class MainMenuActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle ? ) {
@@ -22,9 +22,14 @@ class MainMenuActivity: AppCompatActivity() {
         if (checkPermission()) {
             val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
             val mapButton: Button = findViewById(R.id.floorPlanButton)
+            val tutorialButton: Button = findViewById(R.id.tutorialButton)
             mapButton.setOnClickListener {
                 val dataIntent = Intent(this, MainActivity::class.java)
                 startActivity(dataIntent)
+            }
+            tutorialButton.setOnClickListener {
+                val tutorialIntent = Intent(this, TutorialActivity::class.java)
+                startActivity(tutorialIntent)
             }
             scanQRCode.setOnClickListener {
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -32,29 +37,36 @@ class MainMenuActivity: AppCompatActivity() {
                 val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
                 intentIntegrator.setBeepEnabled(false)
                 intentIntegrator.setCameraId(0)
+                intentIntegrator.captureActivity = CaptureActivity::class.java
                 intentIntegrator.setPrompt("SCAN")
-                intentIntegrator.setBarcodeImageEnabled(false)
+                intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
                 intentIntegrator.initiateScan()
             }
         } else {
             requestPermission()
         }
+
     }
 
-    // Sends QR data to Database activity
-    override fun onActivityResult(requestCode: Int, resultCode: Int,
-        data: Intent ?
+    //Sends QR data to Database activity
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
     ) {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents == null) {
                 Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             } else {
+                val s: String = result.contents;
                 val dataIntent = Intent(this, DataActivity::class.java)
-                dataIntent.putExtra("QRData", result.contents)
+                dataIntent.putExtra("QRData", s)
                 startActivity(dataIntent)
             }
         } else {
+            Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
@@ -79,12 +91,17 @@ class MainMenuActivity: AppCompatActivity() {
         when(requestCode) {
             PERMISSION_REQUEST_CODE ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(applicationContext, "Camera Permission Granted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "Camera Permission Granted", Toast.LENGTH_SHORT).show()
                     val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
                     val mapButton: Button = findViewById(R.id.floorPlanButton)
+                    val tutorialButton: Button = findViewById(R.id.tutorialButton)
                     mapButton.setOnClickListener {
                         val dataIntent = Intent(this, MainActivity::class.java)
                         startActivity(dataIntent)
+                    }
+                    tutorialButton.setOnClickListener {
+                        val tutorialIntent = Intent(this, TutorialActivity::class.java)
+                        startActivity(tutorialIntent)
                     }
                     scanQRCode.setOnClickListener {
                         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -92,26 +109,30 @@ class MainMenuActivity: AppCompatActivity() {
                         val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
                         intentIntegrator.setBeepEnabled(false)
                         intentIntegrator.setCameraId(0)
+                        intentIntegrator.captureActivity = CaptureActivity::class.java
                         intentIntegrator.setPrompt("SCAN")
-                        intentIntegrator.setBarcodeImageEnabled(false)
+                        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
                         intentIntegrator.initiateScan()
                     }
-            }
-            else {
-                Toast.makeText(applicationContext, "Permission Denied",
-                    Toast.LENGTH_SHORT)
-                    .show()
-                if (ContextCompat.checkSelfPermission(
-                        this, Manifest.permission.CAMERA) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                    showMessageOKCancel("You need to allow access Camera Permissions to scan a QR code",
-                        DialogInterface.OnClickListener {
-                            dialog, which-> requestPermission()
-                        })
                 }
-            }
+                else {
+                    Toast.makeText(applicationContext, "Permission Denied",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                    if (ContextCompat.checkSelfPermission(
+                            this, Manifest.permission.CAMERA) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                        showMessageOKCancel("You need to allow access Camera Permissions to scan a QR code",
+                            DialogInterface.OnClickListener {
+                                    dialog, which-> requestPermission()
+                            })
+                    }
+
+                }
+
         }
     }
+
 
     private fun showMessageOKCancel(message: String, okListener: DialogInterface.OnClickListener) {
         AlertDialog.Builder(this@MainMenuActivity)
