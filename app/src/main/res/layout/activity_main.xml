@@ -18,6 +18,11 @@
             android:orientation="vertical" >
 
 
+            <Button
+                android:id="@+id/QRCodeButton2"
+                android:layout_width="62dp"
+                android:layout_height="wrap_content"
+                android:text="QR" />
 
             <Button
                 android:id="@+id/MainMenuButton"
@@ -53,5 +58,9 @@
 
 
     </LinearLayout>
+
+
+
+
 </LinearLayout>
 
