@@ -3,7 +3,7 @@
     package="com.tw.ouguidedtour">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="30" />
+    <uses-sdk android:targetSdkVersion="30" />
     <uses-feature android:name="android.hardware.type.watch" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -25,7 +25,6 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".TutorialActivity"
-            android:label="@string/title_activity_tutorial"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".CaptureActivity"
