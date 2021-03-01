@@ -32,7 +32,21 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import timber.log.Timber
+import android.provider.MediaStore
+import com.google.zxing.integration.android.IntentIntegrator
+import java.io.IOException
+//used for temp json reader
+import com.google.gson.Gson
+import com.google.gson.reflec
 
+
+
+//used for temp json reader
+data class Stop(val id: String, val name: String, val next_stop: Int, val url: String, val desc: String, val tour_id: String) {
+}
+data class Tour(val id: String, val name: String, val stops: Int, val locations: List<Stop>) {
+}
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,6 +57,8 @@ class MainActivity : AppCompatActivity() {
     private var mCameraPermissionApproved: Boolean = false
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
+    private var tour = ArrayList<Tour>()
+    private var qr_string = ""
 
 
 
@@ -61,7 +77,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Timber.i("onCreate Called")
 
-
+        //used for temp json reader
+        var s:String = applicationContext.assets.open("Test.json").bufferedReader().use { it.readText() }
+        val Tourlisttype = object : TypeToken<List<Tour>>() {}.type
+        tour = gson.fromJson(s, Tourlisttype)
 
         mWifiManager = getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
 
@@ -167,13 +186,44 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
+        val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
+        scanQRCode.setOnClickListener {
+            val intentIntegrator = IntentIntegrator(this@MainActivity)
+            intentIntegrator.setBeepEnabled(false)
+            intentIntegrator.setCameraId(0)
+            intentIntegrator.setPrompt("SCAN")
+            intentIntegrator.setBarcodeImageEnabled(false)
+            intentIntegrator.initiateScan()
+            var i = 0
+            while(i < tour.size && tour[0].locations[i].name == qr_string){
+                i += 1;
+            }
+            
 
 
 
     }
 
-
+    // Sends QR data to Database activity
+    override fun onActivityResult(requestCode: Int, resultCode: Int,
+                                  data: Intent ?
+    ) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
+            } else {
+                qr_string = result.contents
+                /*
+                val dataIntent = Intent(this, DataActivity::class.java)
+                dataIntent.putExtra("QRData", result.contents)
+                startActivity(dataIntent)
+                 */
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
 
 
     /** Lifecycle Methods **/

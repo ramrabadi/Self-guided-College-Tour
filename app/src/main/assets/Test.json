@@ -1,0 +1,28 @@
+
+{
+  "Tours": [
+    {
+      "id": "",
+      "name": "",
+      "stops": 10,
+      "Locations": [
+        {
+          "id": "",
+          "name": "",
+          "next_stop": "",
+          "video_url": "",
+          "Description": "",
+          "tour_id": ""
+        },
+        {
+          "id": "",
+          "name": "",
+          "next_stop": "",
+          "video_url": "",
+          "Description": "",
+          "tour_id": ""
+        }
+      ]
+    }
+  ]
+}
