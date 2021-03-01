@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.location.LocationManager
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -19,17 +21,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import org.osmdroid.bonuspack.overlays.GroundOverlay
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
-import timber.log.Timber
-import kotlinx.android.synthetic.main.activity_main.*
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.MapTileProviderBasic
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
+import org.osmdroid.views.overlay.TilesOverlay
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
@@ -39,7 +43,6 @@ import java.io.IOException
 //used for temp json reader
 import com.google.gson.Gson
 import com.google.gson.reflec
-
 
 
 //used for temp json reader
@@ -57,6 +60,10 @@ class MainActivity : AppCompatActivity() {
     private var mCameraPermissionApproved: Boolean = false
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
+
+    var endpoint : GeoPoint = GeoPoint(39.3260082, -82.1066659)
+    var current_floor = 1
+
     private var tour = ArrayList<Tour>()
     private var qr_string = ""
 
@@ -109,27 +116,78 @@ class MainActivity : AppCompatActivity() {
 
             val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
+            Configuration.getInstance().isDebugMode = true
+            Configuration.getInstance().isDebugTileProviders = true
             //create the map
+            val mainTileProvider = MapTileProviderBasic(applicationContext)
+            mainTileProvider.tileSource = TileSourceFactory.MAPNIK
+            val mainTileOverlay = TilesOverlay(mainTileProvider, this.baseContext)
+            mainTileOverlay.loadingBackgroundColor = (Color.TRANSPARENT)
+
             map = findViewById<View>(R.id.map) as MapView
             map!!.setUseDataConnection(true)
-            map!!.setTileSource(TileSourceFactory.MAPNIK)
+            map!!.overlays.add(mainTileOverlay)
+            //map!!.setTileSource(TileSourceFactory.MAPNIK)
             map!!.setMultiTouchControls(true)
+
+            /*
+            val indoorTileprovider = MapTileProviderBasic(applicationContext)
+            val indoorTileSource = XYTileSource(
+                "first_floor",
+                15,
+                19,
+                256,
+                ".png",
+                arrayOf("")
+            )
+
+            indoorTileprovider.tileSource = indoorTileSource
+            val indoorTileOverlay = TilesOverlay(indoorTileprovider, this.baseContext)
+            indoorTileOverlay.loadingBackgroundColor = Color.TRANSPARENT
+            map!!.overlays.add(indoorTileOverlay)
+            */
+
+
+
 
             val mapController = map!!.controller
 
-            //mapController.setZoom(18)
-            val startPoint = GeoPoint(39.32574,-82.10572)
-            mapController.setCenter(startPoint)
+            val dest_floor = 3
+            val dest_loc = GeoPoint(39.3261779,-82.106899)
 
-            val startMarker =
+
+            if (dest_floor != current_floor) {
+                endpoint = GeoPoint( 39.3260909, -82.1069895)
+            }
+            else {
+                endpoint = dest_loc
+            }
+
+            //mapController.setZoom(18)
+            mapController.setCenter(endpoint)
+
+            //draw image of stocker interior on map
+            val myGroundOverlay = GroundOverlay()
+            myGroundOverlay.setPosition(GeoPoint(39.3261511,-82.1069252))
+            val d: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
+            if (d != null) {
+                myGroundOverlay.setImage(d.mutate())
+            }
+            myGroundOverlay.setDimensions(130.0f)
+            myGroundOverlay.setTransparency(0.25f)
+            myGroundOverlay.setBearing(-54.5F)
+            map!!.overlays.add(myGroundOverlay)
+
+
+            val destMarker =
                 Marker(map)
-            startMarker.position = startPoint
-            startMarker.setAnchor(
+            destMarker.position = endpoint
+            destMarker.setAnchor(
                 Marker.ANCHOR_CENTER,
                 Marker.ANCHOR_BOTTOM
             )
-            startMarker.setTitle("Stocker Center")
-            map!!.overlays.add(startMarker)
+            destMarker.setTitle("Stocker Center")
+            map!!.overlays.add(destMarker)
 
             //enable location tracking
             val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
@@ -145,12 +203,14 @@ class MainActivity : AppCompatActivity() {
                 mapController.setZoom(18)
                 val currentloc = mLocationOverlay.myLocation
                 waypoints.add(currentloc)
-                waypoints.add(startPoint)
+                waypoints.add(endpoint)
                 val road: Road = roadManager.getRoad(waypoints)
                 val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road)
                 map!!.overlays.add(roadOverlay)
             }}
             map!!.overlays.add(mLocationOverlay)
+
+
             map!!.invalidate()//refresh the map to apply changes
 
             //load osmdroid configuration
