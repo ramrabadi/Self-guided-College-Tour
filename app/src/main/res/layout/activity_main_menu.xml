@@ -45,6 +45,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.68" />
 
+
     <Button
         android:id="@+id/QRCodeButton2"
         android:layout_width="139dp"
