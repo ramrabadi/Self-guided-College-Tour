@@ -42,6 +42,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import java.io.IOException
 //used for temp json reader
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 
 
@@ -86,11 +87,14 @@ class MainActivity : AppCompatActivity() {
         Timber.i("onCreate Called")
 
         //used for temp json reader
+        /*
+        //this is not formatted for current json file setup
         var s: String =
             applicationContext.assets.open("Test.json").bufferedReader().use { it.readText() }
         val Tourlisttype = object : TypeToken<List<Tour>>() {}.type
-
-        tour = Gson().fromJson(s, Tourlisttype)
+        val gson = GsonBuilder().create()
+        tour = gson.fromJson<ArrayList<Tour>>(s, Tourlisttype)
+        */
 
         mWifiManager = getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
 
