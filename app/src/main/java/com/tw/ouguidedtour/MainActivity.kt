@@ -42,7 +42,9 @@ import com.google.zxing.integration.android.IntentIntegrator
 import java.io.IOException
 //used for temp json reader
 import com.google.gson.Gson
-import com.google.gson.reflec
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+
 
 
 //used for temp json reader
@@ -85,9 +87,14 @@ class MainActivity : AppCompatActivity() {
         Timber.i("onCreate Called")
 
         //used for temp json reader
-        var s:String = applicationContext.assets.open("Test.json").bufferedReader().use { it.readText() }
+        /*
+        //this is not formatted for current json file setup
+        var s: String =
+            applicationContext.assets.open("Test.json").bufferedReader().use { it.readText() }
         val Tourlisttype = object : TypeToken<List<Tour>>() {}.type
-        tour = gson.fromJson(s, Tourlisttype)
+        val gson = GsonBuilder().create()
+        tour = gson.fromJson<ArrayList<Tour>>(s, Tourlisttype)
+        */
 
         mWifiManager = getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
 
@@ -114,7 +121,8 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            val policy: StrictMode.ThreadPolicy =
+                StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
             Configuration.getInstance().isDebugMode = true
             Configuration.getInstance().isDebugTileProviders = true
@@ -148,18 +156,15 @@ class MainActivity : AppCompatActivity() {
             */
 
 
-
-
             val mapController = map!!.controller
 
             val dest_floor = 3
-            val dest_loc = GeoPoint(39.3261779,-82.106899)
+            val dest_loc = GeoPoint(39.3261779, -82.106899)
 
 
             if (dest_floor != current_floor) {
-                endpoint = GeoPoint( 39.3260909, -82.1069895)
-            }
-            else {
+                endpoint = GeoPoint(39.3260909, -82.1069895)
+            } else {
                 endpoint = dest_loc
             }
 
@@ -168,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
             //draw image of stocker interior on map
             val myGroundOverlay = GroundOverlay()
-            myGroundOverlay.setPosition(GeoPoint(39.3261511,-82.1069252))
+            myGroundOverlay.setPosition(GeoPoint(39.3261511, -82.1069252))
             val d: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
             if (d != null) {
                 myGroundOverlay.setImage(d.mutate())
@@ -190,7 +195,7 @@ class MainActivity : AppCompatActivity() {
             map!!.overlays.add(destMarker)
 
             //enable location tracking
-            val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
+            val mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
             mLocationOverlay.enableMyLocation()
             mLocationOverlay.enableFollowLocation()
 
@@ -198,16 +203,18 @@ class MainActivity : AppCompatActivity() {
             val roadManager: RoadManager = OSRMRoadManager(this)
             val waypoints = ArrayList<GeoPoint>()
 
-            mLocationOverlay.runOnFirstFix{runOnUiThread {
-                mapController.animateTo(mLocationOverlay.myLocation)
-                mapController.setZoom(18)
-                val currentloc = mLocationOverlay.myLocation
-                waypoints.add(currentloc)
-                waypoints.add(endpoint)
-                val road: Road = roadManager.getRoad(waypoints)
-                val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road)
-                map!!.overlays.add(roadOverlay)
-            }}
+            mLocationOverlay.runOnFirstFix {
+                runOnUiThread {
+                    mapController.animateTo(mLocationOverlay.myLocation)
+                    mapController.setZoom(18)
+                    val currentloc = mLocationOverlay.myLocation
+                    waypoints.add(currentloc)
+                    waypoints.add(endpoint)
+                    val road: Road = roadManager.getRoad(waypoints)
+                    val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road)
+                    map!!.overlays.add(roadOverlay)
+                }
+            }
             map!!.overlays.add(mLocationOverlay)
 
 
@@ -233,6 +240,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(dataIntent)
 
         }
+
         checkForPermissions(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             "Fine Location",
@@ -255,12 +263,12 @@ class MainActivity : AppCompatActivity() {
             intentIntegrator.setBarcodeImageEnabled(false)
             intentIntegrator.initiateScan()
             var i = 0
-            while(i < tour.size && tour[0].locations[i].name == qr_string){
+            while (i < tour.size && tour[0].locations[i].name == qr_string) {
                 i += 1;
             }
-            
 
 
+        }
 
     }
 
