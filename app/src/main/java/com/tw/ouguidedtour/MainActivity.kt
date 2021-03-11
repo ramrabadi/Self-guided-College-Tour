@@ -8,6 +8,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -44,7 +46,8 @@ import java.io.IOException
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-
+import org.osmdroid.tileprovider.tilesource.XYTileSource
+import org.osmdroid.views.MapController
 
 
 //used for temp json reader
@@ -65,6 +68,8 @@ class MainActivity : AppCompatActivity() {
 
     var endpoint : GeoPoint = GeoPoint(39.3260082, -82.1066659)
     var current_floor = 1
+    lateinit var roadOverlay: Polyline
+    lateinit var destMarker: Marker
 
     private var tour = ArrayList<Tour>()
     private var qr_string = ""
@@ -133,12 +138,20 @@ class MainActivity : AppCompatActivity() {
             mainTileOverlay.loadingBackgroundColor = (Color.TRANSPARENT)
 
             map = findViewById<View>(R.id.map) as MapView
+
+            val mapController = map!!.controller
+            mapController.setZoom(18.0)
+            mapController.setCenter(GeoPoint(39.3261779, -82.106899))
+
             map!!.setUseDataConnection(true)
             map!!.overlays.add(mainTileOverlay)
+            map!!.minZoomLevel = 12.0
+
             //map!!.setTileSource(TileSourceFactory.MAPNIK)
             map!!.setMultiTouchControls(true)
 
-            /*
+            /* Tile provider for interior map This will draw indoor map, but is not currently compatible with routefinding
+            
             val indoorTileprovider = MapTileProviderBasic(applicationContext)
             val indoorTileSource = XYTileSource(
                 "first_floor",
@@ -148,15 +161,18 @@ class MainActivity : AppCompatActivity() {
                 ".png",
                 arrayOf("")
             )
+            
+             
 
             indoorTileprovider.tileSource = indoorTileSource
             val indoorTileOverlay = TilesOverlay(indoorTileprovider, this.baseContext)
             indoorTileOverlay.loadingBackgroundColor = Color.TRANSPARENT
             map!!.overlays.add(indoorTileOverlay)
-            */
 
 
-            val mapController = map!!.controller
+             */
+
+
 
             val dest_floor = 3
             val dest_loc = GeoPoint(39.3261779, -82.106899)
@@ -168,8 +184,6 @@ class MainActivity : AppCompatActivity() {
                 endpoint = dest_loc
             }
 
-            //mapController.setZoom(18)
-            mapController.setCenter(endpoint)
 
             //draw image of stocker interior on map
             val myGroundOverlay = GroundOverlay()
@@ -184,18 +198,20 @@ class MainActivity : AppCompatActivity() {
             map!!.overlays.add(myGroundOverlay)
 
 
-            val destMarker =
+
+
+            destMarker =
                 Marker(map)
             destMarker.position = endpoint
             destMarker.setAnchor(
                 Marker.ANCHOR_CENTER,
                 Marker.ANCHOR_BOTTOM
             )
-            destMarker.setTitle("Stocker Center")
+            destMarker.setTitle("Destination")
             map!!.overlays.add(destMarker)
 
             //enable location tracking
-            val mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
+            var mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
             mLocationOverlay.enableMyLocation()
             mLocationOverlay.enableFollowLocation()
 
@@ -205,18 +221,19 @@ class MainActivity : AppCompatActivity() {
 
             mLocationOverlay.runOnFirstFix {
                 runOnUiThread {
+
                     mapController.animateTo(mLocationOverlay.myLocation)
-                    mapController.setZoom(18)
+                    mapController.setZoom(18.0)
                     val currentloc = mLocationOverlay.myLocation
                     waypoints.add(currentloc)
                     waypoints.add(endpoint)
                     val road: Road = roadManager.getRoad(waypoints)
-                    val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road)
+                    roadOverlay= RoadManager.buildRoadOverlay(road)
                     map!!.overlays.add(roadOverlay)
                 }
             }
-            map!!.overlays.add(mLocationOverlay)
 
+            map!!.overlays.add(mLocationOverlay)
 
             map!!.invalidate()//refresh the map to apply changes
 
@@ -360,6 +377,63 @@ class MainActivity : AppCompatActivity() {
         // Stop getting GPS location
 
         // Stop getting Wifi RTT ranging
+    }
+    
+    private fun updateDestination(
+        //data for next stop
+        lat: Double,
+        lon: Double ,
+        floor: Integer,
+
+        //the rest of this is arguments so that the map can be updated
+        map : MapView,
+        mapController: MapController,
+        mLocationOverlay : MyLocationNewOverlay,
+        current_floor: Integer
+        ) {
+
+        val roadManager: RoadManager = OSRMRoadManager(this)
+        val waypoints = ArrayList<GeoPoint>()
+
+        map!!.overlays.remove(destMarker)
+        map!!.overlays.remove(roadOverlay)
+
+        if (floor != current_floor) {
+            endpoint = GeoPoint(39.3260909, -82.1069895)
+        } else {
+            endpoint = GeoPoint(lat, lon)
+        }
+
+
+        destMarker =
+            Marker(map)
+        destMarker.position = endpoint
+        destMarker.setAnchor(
+            Marker.ANCHOR_CENTER,
+            Marker.ANCHOR_BOTTOM
+        )
+        destMarker.setTitle("Destination")
+        map!!.overlays.add(destMarker)
+
+
+
+
+
+
+        mLocationOverlay.runOnFirstFix {
+            runOnUiThread {
+
+                mapController.animateTo(mLocationOverlay.myLocation)
+                mapController.setZoom(18.0)
+                val currentloc = mLocationOverlay.myLocation
+                waypoints.add(currentloc)
+                waypoints.add(endpoint)
+                val road: Road = roadManager.getRoad(waypoints)
+                roadOverlay= RoadManager.buildRoadOverlay(road)
+                map!!.overlays.add(roadOverlay)
+            }
+        }
+
     }
 
     /** Functions which check for permission and request permissions **/

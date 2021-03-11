@@ -1,0 +1,25 @@
+﻿{
+    "tilejson":"1.0.0", 
+    "name":"My Map", 
+    "description":"Made with Maperitive", 
+    "attribution":"Map data © OpenStreetMap contributors", 
+    "tiles":
+    [
+        "tiles/{z}/{x}/{y}.png"
+    ], 
+    "minzoom":17, 
+    "maxzoom":19, 
+    "bounds":
+    [
+        -82.110571143959845, 
+        39.3250675289574, 
+        -82.101983150258548, 
+        39.327721360278467
+    ], 
+    "center":
+    [
+        -82.1062771471092, 
+        39.326394444617932, 
+        17
+    ]
+}
