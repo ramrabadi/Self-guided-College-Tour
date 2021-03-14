@@ -49,13 +49,12 @@ class TourActivity: AppCompatActivity() {
 
         displayLocation(tour, input)
 
-
     }
 
     private fun displayLocation(tour: Tour, input: String) {
 
         currentLocation = tour.getLocation(tour, input)
-
+        title = currentLocation.getName();
         val videoView : VideoView = findViewById(R.id.TourVideoView)
         val mediaController = MediaController(this)
         mediaController.setAnchorView(videoView)
