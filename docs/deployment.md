@@ -30,7 +30,7 @@ The rest of the information will be related to your account or passwords for the
 
 The Locations don't have to been in order. The names are case sensitive and need to be exactly as shown.
 
-![JSON Format](https://i.imgur.com/omCBDry.png)
+![JSON Format](https://i.imgur.com/9RTk10H.png)
 
 
 ## QR codes generation (TBD)
