@@ -23,6 +23,7 @@ class MainMenuActivity: AppCompatActivity() {
             val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
             val mapButton: Button = findViewById(R.id.floorPlanButton)
             val tutorialButton: Button = findViewById(R.id.tutorialButton)
+            val floorPlanButton: Button = findViewById(R.id.FloorPlanButton)
             mapButton.setOnClickListener {
                 val dataIntent = Intent(this, MainActivity::class.java)
                 startActivity(dataIntent)
@@ -30,6 +31,10 @@ class MainMenuActivity: AppCompatActivity() {
             tutorialButton.setOnClickListener {
                 val tutorialIntent = Intent(this, TutorialActivity::class.java)
                 startActivity(tutorialIntent)
+            }
+            floorPlanButton.setOnClickListener {
+                val floorPlanIntent = Intent(this, FloorPlan::class.java)
+                startActivity(floorPlanIntent)
             }
             scanQRCode.setOnClickListener {
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -45,7 +50,6 @@ class MainMenuActivity: AppCompatActivity() {
         } else {
             requestPermission()
         }
-
     }
 
     //Sends QR data to Database activity
@@ -95,6 +99,7 @@ class MainMenuActivity: AppCompatActivity() {
                     val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
                     val mapButton: Button = findViewById(R.id.floorPlanButton)
                     val tutorialButton: Button = findViewById(R.id.tutorialButton)
+                    val floorPlanButton: Button = findViewById(R.id.FloorPlanButton)
                     mapButton.setOnClickListener {
                         val dataIntent = Intent(this, MainActivity::class.java)
                         startActivity(dataIntent)
@@ -102,6 +107,10 @@ class MainMenuActivity: AppCompatActivity() {
                     tutorialButton.setOnClickListener {
                         val tutorialIntent = Intent(this, TutorialActivity::class.java)
                         startActivity(tutorialIntent)
+                    }
+                    floorPlanButton.setOnClickListener {
+                        val floorPlanIntent = Intent(this, FloorPlan::class.java)
+                        startActivity(floorPlanIntent)
                     }
                     scanQRCode.setOnClickListener {
                         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -132,7 +141,6 @@ class MainMenuActivity: AppCompatActivity() {
 
         }
     }
-
 
     private fun showMessageOKCancel(message: String, okListener: DialogInterface.OnClickListener) {
         AlertDialog.Builder(this@MainMenuActivity)
