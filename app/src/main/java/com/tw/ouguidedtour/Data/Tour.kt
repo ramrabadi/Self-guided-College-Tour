@@ -191,7 +191,7 @@ class Tour: AppCompatActivity() {
                 tour.setToursStopsVisited(i)
                 return list[i]
             } else if (list[i].getId() == input && visited[i]) {
-                x.setId("Error Already Visited Location")
+                x.setId("Error")
                 return x
             }
         }
