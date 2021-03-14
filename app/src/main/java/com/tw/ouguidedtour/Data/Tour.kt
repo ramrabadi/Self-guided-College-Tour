@@ -9,10 +9,6 @@ import java.io.IOException
 import java.io.InputStream
 
 class Tour: AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val assets = this.assets
-    }
 
     // Id of the Location, never seen or used by the user
     private var id: String
@@ -22,6 +18,9 @@ class Tour: AppCompatActivity() {
 
     // Number of Stops in the tour
     private var stops: Int = 0
+
+    // Number of Stops Visited
+    private var stops_visited: Int = 0
 
     private var current_stop: String
 
@@ -34,6 +33,7 @@ class Tour: AppCompatActivity() {
         id = ""
         name = ""
         stops = 0
+        stops_visited = 0
         current_stop = ""
     }
 
@@ -107,6 +107,13 @@ class Tour: AppCompatActivity() {
                         val image = picturesArray.getJSONObject(k)
                         output.setPicture(image.getString("image"))
                     }
+                    val tempNavigationData:NavigationData = NavigationData()
+
+                    tempNavigationData.setLat((location.getString("lat")))
+                    tempNavigationData.setLong((location.getString("long")))
+                    tempNavigationData.setFloor((location.getString("floor")))
+
+                    output.setNavigationData(tempNavigationData)
 
                     tour.tour_stops.add(output)
                     tour.tour_stops_visited.add(false)
@@ -141,8 +148,15 @@ class Tour: AppCompatActivity() {
     fun setStops(temp: Int) {
         stops = temp
     }
+    fun addStopVisited() {
+        stops_visited += 1
+    }
     fun setCurrentStop(temp: String) {
         current_stop = temp
+    }
+    // Change a location from not visited to visited
+    fun setToursStopsVisited(temp: Int) {
+        tour_stops_visited[temp] = true
     }
 
     // Variable getters
@@ -154,6 +168,9 @@ class Tour: AppCompatActivity() {
     }
     fun getStops(): Int {
         return stops
+    }
+    fun getStopsVisited(): Int {
+        return  stops_visited
     }
     fun getCurrentStop(): String {
         return current_stop
@@ -171,6 +188,7 @@ class Tour: AppCompatActivity() {
         val visited = tour.getTourStopsVisited()
         for (i in 0 until list.size) {
             if (list[i].getId() == input && !visited[i]) {
+                tour.setToursStopsVisited(i)
                 return list[i]
             } else if (list[i].getId() == input && visited[i]) {
                 x.setId("Error Already Visited Location")
