@@ -25,7 +25,8 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".TutorialActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".CaptureActivity"
             android:screenOrientation="fullSensor"
@@ -42,6 +43,9 @@
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".MainMenuActivity">
             <intent-filter>

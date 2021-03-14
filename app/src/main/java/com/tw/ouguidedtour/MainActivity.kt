@@ -25,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.zxing.integration.android.IntentIntegrator
 import org.osmdroid.bonuspack.overlays.GroundOverlay
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
@@ -32,6 +34,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.MapTileProviderBasic
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
@@ -57,7 +60,7 @@ data class Tour(val id: String, val name: String, val stops: Int, val locations:
 
 class MainActivity : AppCompatActivity() {
 
-    private var locationManager : LocationManager? = null
+    private var locationManager: LocationManager? = null
     private val ACCESS_FINE_LOCATION_RQ = 101
     private val ACCESS_CAMERA_RQ = 102
     private var mLocationPermissionApproved: Boolean = false
@@ -65,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
 
-    var endpoint : GeoPoint = GeoPoint(39.3260082, -82.1066659)
+    var endpoint: GeoPoint = GeoPoint(39.3260082, -82.1066659)
     var current_floor = 1
     val gpsroadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
     var roadOverlay: Polyline = Polyline()
@@ -81,11 +84,6 @@ class MainActivity : AppCompatActivity() {
 
     private var tour = ArrayList<Tour>()
     private var qr_string = ""
-
-
-
-
-
 
 
     /** These are for the Checking if Wifi RTT is compatible with the phone **/
@@ -109,6 +107,49 @@ class MainActivity : AppCompatActivity() {
         tour = gson.fromJson<ArrayList<Tour>>(s, Tourlisttype)
         */
 
+        //init
+        val bottomNavigationView =
+            findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        //Set
+        bottomNavigationView.selectedItemId = R.id.MapMenu
+        //Perform ItemSelectedListener
+        bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.home -> {startActivity(Intent(applicationContext, MainMenuActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.MapMenu -> {startActivity(Intent(applicationContext, MainActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.ScanQR -> {
+                    val intentIntegrator = IntentIntegrator(this@MainActivity)
+                    intentIntegrator.setBeepEnabled(false)
+                    intentIntegrator.setCameraId(0)
+                    intentIntegrator.setPrompt("SCAN")
+                    intentIntegrator.setBarcodeImageEnabled(false)
+                    intentIntegrator.initiateScan()
+                    var i = 0
+                    while (i < tour.size && tour[0].locations[i].name == qr_string) {
+                        i += 1;
+                    }
+                    overridePendingTransition(0, 0)
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.FloorPlanMenu -> {startActivity(Intent(applicationContext, FloorPlan::class.java))
+                    overridePendingTransition(0, 0)
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.VideoViewMenu -> {startActivity(Intent(applicationContext, Activity2::class.java))
+                    overridePendingTransition(0, 0)
+                    return@OnNavigationItemSelectedListener true
+                }
+            }
+            false
+        });
+
+
         mWifiManager = getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
 
         // Check if user has Android API 28 or higher
@@ -119,21 +160,6 @@ class MainActivity : AppCompatActivity() {
             locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
             gpsroadManager.addRequestOption("vehicle=foot")
 
-
-            // Init of Video button temp
-            val button = findViewById<Button>(R.id.VideoButton)
-            button.setOnClickListener {
-                val intent = Intent(this, Activity2::class.java)
-                startActivity(intent)
-            }
-
-            // Display Floor Plan Button
-            val floorPlanButton: Button = findViewById(R.id.FloorPlanButton)
-            floorPlanButton.setOnClickListener {
-                // Display Floor Plan
-                val intent = Intent(this, FloorPlan::class.java)
-                startActivity(intent)
-            }
 
             val policy: StrictMode.ThreadPolicy =
                 StrictMode.ThreadPolicy.Builder().permitAll().build()
@@ -262,12 +288,6 @@ class MainActivity : AppCompatActivity() {
             val below28API = Intent(this, FloorPlan::class.java)
             startActivity(below28API)
         }
-        val mainMenuButton: Button = findViewById(R.id.MainMenuButton)
-        mainMenuButton.setOnClickListener {
-            val dataIntent = Intent(this, MainMenuActivity::class.java)
-            startActivity(dataIntent)
-
-        }
 
         checkForPermissions(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -282,21 +302,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
-        scanQRCode.setOnClickListener {
-            val intentIntegrator = IntentIntegrator(this@MainActivity)
-            intentIntegrator.setBeepEnabled(false)
-            intentIntegrator.setCameraId(0)
-            intentIntegrator.setPrompt("SCAN")
-            intentIntegrator.setBarcodeImageEnabled(false)
-            intentIntegrator.initiateScan()
-            var i = 0
-            while (i < tour.size && tour[0].locations[i].name == qr_string) {
-                i += 1;
-            }
-
-
-        }
 
     }
 
