@@ -30,11 +30,13 @@ class TourActivity: AppCompatActivity() {
         val intent = intent
         var input: String? = intent.getStringExtra("id")
 
-        // Finds the tour Id of the location currently at, should only be used for the initial location
-        tour.setId(tour.get_tour_id(input!!, "Tours.json", assets))
+        if (tour.getId() != "" || tour.getId() != "Error") {
+            // Finds the tour Id of the location currently at, should only be used for the initial location
+            tour.setId(tour.get_tour_id(input!!, "Tours.json", assets))
+        }
 
         // Load the data for the entire tour
-        tour.load_list_of_stops(tour, input, "Tour.json", assets)
+        tour.load_list_of_stops(tour, input!!, "Tour.json", assets)
 
         nextLocation = tour.getLocation(tour, currentLocation.getNextLocationId())
         nextLocationId = nextLocation.getId()
