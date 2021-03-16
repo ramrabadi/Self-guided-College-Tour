@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.os.StrictMode
 import android.preference.PreferenceManager
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -27,6 +28,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.zxing.integration.android.IntentIntegrator
+import com.journeyapps.barcodescanner.CaptureActivity
 import org.osmdroid.bonuspack.overlays.GroundOverlay
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
@@ -53,10 +55,6 @@ import android.location.LocationListener as LocationListener
 
 
 //used for temp json reader
-data class Stop(val id: String, val name: String, val next_stop: Int, val url: String, val desc: String, val tour_id: String) {
-}
-data class Tour(val id: String, val name: String, val stops: Int, val locations: List<Stop>) {
-}
 
 class MainActivity : AppCompatActivity() {
 
@@ -82,7 +80,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var mLastLocation: Location
     internal lateinit var mLocationRequest: LocationRequest
 
-    private var tour = ArrayList<Tour>()
     private var qr_string = ""
 
 
@@ -96,16 +93,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.i("onCreate Called")
-
+        val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
         //used for temp json reader
-        /*
-        //this is not formatted for current json file setup
-        var s: String =
-            applicationContext.assets.open("Test.json").bufferedReader().use { it.readText() }
-        val Tourlisttype = object : TypeToken<List<Tour>>() {}.type
-        val gson = GsonBuilder().create()
-        tour = gson.fromJson<ArrayList<Tour>>(s, Tourlisttype)
-        */
+
 
         //init
         val bottomNavigationView =
@@ -130,10 +120,6 @@ class MainActivity : AppCompatActivity() {
                     intentIntegrator.setPrompt("SCAN")
                     intentIntegrator.setBarcodeImageEnabled(false)
                     intentIntegrator.initiateScan()
-                    var i = 0
-                    while (i < tour.size && tour[0].locations[i].name == qr_string) {
-                        i += 1;
-                    }
                     overridePendingTransition(0, 0)
                     return@OnNavigationItemSelectedListener true
                 }
@@ -302,7 +288,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
     }
 
     // Sends QR data to Database activity
@@ -314,12 +299,10 @@ class MainActivity : AppCompatActivity() {
             if (result.contents == null) {
                 Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             } else {
-                qr_string = result.contents
-                /*
-                val dataIntent = Intent(this, DataActivity::class.java)
-                dataIntent.putExtra("QRData", result.contents)
+                val dataIntent = intent
+                dataIntent.putExtra("id", result.contents)
                 startActivity(dataIntent)
-                 */
+
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
