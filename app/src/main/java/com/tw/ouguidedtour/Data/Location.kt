@@ -22,6 +22,8 @@ class Location {
     // The id of the tour the location is apart of
     private lateinit var id_of_tour: String
 
+    private lateinit var navigationData: NavigationData
+
     //Setters
     fun setId(temp: String) {
         id = temp
@@ -44,6 +46,10 @@ class Location {
     fun setPicture(temp: String) {
         pictures.add(temp)
     }
+    fun setNavigationData(temp: NavigationData) {
+        navigationData = temp
+    }
+
 
     //Getters
     fun getId(): String {
@@ -67,4 +73,8 @@ class Location {
     fun getPictures(): List<String> {
         return pictures
     }
+    fun getNavData(): NavigationData {
+        return  navigationData
+    }
+
 }
