@@ -1,7 +1,7 @@
 package com.tw.ouguidedtour
 
 
-//used for temp json reader
+import android.Manifest
 import android.Manifest.permission
 import android.content.Context
 import android.content.DialogInterface
@@ -9,10 +9,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.location.Location
 import android.location.LocationManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.os.StrictMode
 import android.preference.PreferenceManager
 import android.view.View
@@ -26,7 +28,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.zxing.integration.android.IntentIntegrator
 import org.osmdroid.bonuspack.overlays.GroundOverlay
-import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
 import org.osmdroid.config.Configuration
@@ -41,6 +42,14 @@ import org.osmdroid.views.overlay.TilesOverlay
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
+import com.google.android.gms.location.*
+import com.google.zxing.integration.android.IntentIntegrator
+//used for temp json reader
+import com.google.gson.reflect.TypeToken
+import org.osmdroid.bonuspack.routing.GraphHopperRoadManager
+import org.osmdroid.tileprovider.tilesource.XYTileSource
+import org.osmdroid.views.MapController
+import android.location.LocationListener as LocationListener
 
 
 //used for temp json reader
@@ -61,8 +70,17 @@ class MainActivity : AppCompatActivity() {
 
     var endpoint: GeoPoint = GeoPoint(39.3260082, -82.1066659)
     var current_floor = 1
-    lateinit var roadOverlay: Polyline
+    val gpsroadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
+    var roadOverlay: Polyline = Polyline()
     lateinit var destMarker: Marker
+    lateinit var mLocationOverlay : MyLocationNewOverlay
+
+    //location listener config
+    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
+    private val INTERVAL: Long = 5000
+    private val FASTEST_INTERVAL: Long = 10000
+    lateinit var mLastLocation: Location
+    internal lateinit var mLocationRequest: LocationRequest
 
     private var tour = ArrayList<Tour>()
     private var qr_string = ""
@@ -140,6 +158,7 @@ class MainActivity : AppCompatActivity() {
 
 
             locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+            gpsroadManager.addRequestOption("vehicle=foot")
 
 
             val policy: StrictMode.ThreadPolicy =
@@ -227,12 +246,12 @@ class MainActivity : AppCompatActivity() {
             map!!.overlays.add(destMarker)
 
             //enable location tracking
-            var mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
+            mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
             mLocationOverlay.enableMyLocation()
             mLocationOverlay.enableFollowLocation()
 
             //enable navigation
-            val roadManager: RoadManager = OSRMRoadManager(this)
+
             val waypoints = ArrayList<GeoPoint>()
 
             mLocationOverlay.runOnFirstFix {
@@ -243,14 +262,16 @@ class MainActivity : AppCompatActivity() {
                     val currentloc = mLocationOverlay.myLocation
                     waypoints.add(currentloc)
                     waypoints.add(endpoint)
-                    val road: Road = roadManager.getRoad(waypoints)
+                    val road: Road = gpsroadManager.getRoad(waypoints)
                     roadOverlay= RoadManager.buildRoadOverlay(road)
                     map!!.overlays.add(roadOverlay)
+
                 }
             }
 
             map!!.overlays.add(mLocationOverlay)
 
+            startLocationUpdates()
             map!!.invalidate()//refresh the map to apply changes
 
             //load osmdroid configuration
@@ -347,7 +368,6 @@ class MainActivity : AppCompatActivity() {
 
 
         // Resume playing video
-
         map!!.onResume()//resume map updating of ui
     }
 
@@ -356,7 +376,6 @@ class MainActivity : AppCompatActivity() {
         Timber.i("onPause Called")
 
         // Pause video
-
         map!!.onPause()//pause updating of map ui
     }
 
@@ -370,6 +389,7 @@ class MainActivity : AppCompatActivity() {
         Timber.i("onDestroy Called")
 
         // Stop getting GPS location
+        stoplocationUpdates()
 
         // Stop getting Wifi RTT ranging
     }
@@ -387,11 +407,12 @@ class MainActivity : AppCompatActivity() {
         current_floor: Integer
         ) {
 
-        val roadManager: RoadManager = OSRMRoadManager(this)
+
         val waypoints = ArrayList<GeoPoint>()
 
-        map!!.overlays.remove(destMarker)
-        map!!.overlays.remove(roadOverlay)
+        map.overlays.remove(destMarker)
+        map.overlays.remove(roadOverlay)
+        map.invalidate()
 
         if (floor != current_floor) {
             endpoint = GeoPoint(39.3260909, -82.1069895)
@@ -408,27 +429,99 @@ class MainActivity : AppCompatActivity() {
             Marker.ANCHOR_BOTTOM
         )
         destMarker.setTitle("Destination")
-        map!!.overlays.add(destMarker)
+        map.overlays.add(destMarker)
 
 
 
 
 
 
-        mLocationOverlay.runOnFirstFix {
+
             runOnUiThread {
-
                 mapController.animateTo(mLocationOverlay.myLocation)
                 mapController.setZoom(18.0)
                 val currentloc = mLocationOverlay.myLocation
                 waypoints.add(currentloc)
                 waypoints.add(endpoint)
-                val road: Road = roadManager.getRoad(waypoints)
-                roadOverlay= RoadManager.buildRoadOverlay(road)
-                map!!.overlays.add(roadOverlay)
+                val road: Road = gpsroadManager.getRoad(waypoints)
+                roadOverlay = RoadManager.buildRoadOverlay(road)
+                map.overlays.add(roadOverlay)
+
+                map.invalidate()
             }
+
+    }
+
+    val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            //check for update on current location
+
+            locationResult.lastLocation
+
+            onLocationChanged(locationResult.lastLocation)
         }
 
+        fun onLocationChanged(location: Location) {
+            mLastLocation = location
+            if (mLastLocation != null) {
+
+                //check for switch to/from indoor navigation
+                if (mLocationOverlay.myLocation != null) {
+                    gpsEnableCheck()
+
+
+                    //update and replace route overlay
+                    //note overlay location is used and not actual location
+                    //if followlocation is disabled, i.e. user is indoors this is still required to update the route
+                    map!!.overlays.remove(roadOverlay)
+                    map!!.invalidate()
+                    runOnUiThread {
+
+                        val waypoints = ArrayList<GeoPoint>()
+                        waypoints.add(mLocationOverlay.myLocation)
+                        waypoints.add(endpoint)
+                        roadOverlay =
+                            RoadManager.buildRoadOverlay(gpsroadManager.getRoad(waypoints))
+
+                        map!!.overlays.add(roadOverlay)
+                        map!!.invalidate()
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    protected fun startLocationUpdates() {
+
+        // Create the location request to start receiving updates
+        mLocationRequest = LocationRequest()
+        mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest!!.setInterval(INTERVAL)
+        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
+
+        // Create LocationSettingsRequest object using location request
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(mLocationRequest!!)
+        val locationSettingsRequest = builder.build()
+
+        val settingsClient = LocationServices.getSettingsClient(this)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+            return
+        }
+        mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback,
+            Looper.myLooper())
+    }
+
+    private fun stoplocationUpdates() {
+        mFusedLocationProviderClient!!.removeLocationUpdates(mLocationCallback)
     }
 
     /** Functions which check for permission and request permissions **/
@@ -583,21 +676,23 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
-    /**Checks if location is close enough to stocker for rtt to enable
-     * Place function to enable RTT in here
-     * Currently set for 100 m from enable location
+    /**Checks if location is within stocker
+     * disable following gps location on map to prevent innacuracy from disrupting navigation
+     * Currently set for 30 m from center of building
+     * reenables if outside that radius
      */
-    private fun enableRttCheck() {
-        val mLocationOverlay = MyLocationNewOverlay( GpsMyLocationProvider(this), map!! )
-        mLocationOverlay.enableMyLocation()
-        val enableLoc = GeoPoint(39.32574,-82.10572)//rough coordinates for Stocker Center Entrance
+    private fun gpsEnableCheck() {
+        val enableLoc = GeoPoint(39.3261291,-82.1069648)//coordinates for center of stocker
 
-        /*
-        if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 100.0 ) {
-            //function to enable RTT here
+
+        if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 30.0 ) {
+            mLocationOverlay.disableFollowLocation()
+        }
+        else {
+            mLocationOverlay.enableFollowLocation()
         }
 
-         */
+
     }
 
 }
