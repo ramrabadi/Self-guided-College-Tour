@@ -45,12 +45,10 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
 import com.google.android.gms.location.*
-import com.google.zxing.integration.android.IntentIntegrator
 //used for temp json reader
 import com.google.gson.reflect.TypeToken
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager
 import org.osmdroid.tileprovider.tilesource.XYTileSource
-import org.osmdroid.views.MapController
 import android.location.LocationListener as LocationListener
 
 
@@ -93,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.i("onCreate Called")
-        val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
+        //val scanQRCode: Button = findViewById(R.id.ScanQR)
         //used for temp json reader
 
 
@@ -476,7 +474,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    protected fun startLocationUpdates() {
+    private fun startLocationUpdates() {
 
         // Create the location request to start receiving updates
         mLocationRequest = LocationRequest()
@@ -669,10 +667,10 @@ class MainActivity : AppCompatActivity() {
 
 
         if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 30.0 ) {
-            mLocationOverlay.disableFollowLocation()
+            mLocationOverlay.disableMyLocation()
         }
         else {
-            mLocationOverlay.enableFollowLocation()
+            mLocationOverlay.enableMyLocation()
         }
 
 
