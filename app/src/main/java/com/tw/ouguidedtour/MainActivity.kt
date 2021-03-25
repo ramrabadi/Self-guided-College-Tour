@@ -43,6 +43,8 @@ import com.tw.ouguidedtour.Data.NavigationData
 import com.tw.ouguidedtour.Data.Tour
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager
 import org.osmdroid.views.MapController
+import org.osmdroid.tileprovider.tilesource.XYTileSource
+import android.location.LocationListener as LocationListener
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,8 +59,12 @@ class MainActivity : AppCompatActivity() {
     val x: Int = 1235
 
     var endpoint: GeoPoint = GeoPoint(39.3260082, -82.1066659)
-    private var currentFloor = 1
-    val gpsRoadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
+
+    var current_floor = 1
+    var end_floor = 3
+    var display_floor = 1
+    val gpsroadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
+    val myGroundOverlay = GroundOverlay()
     var roadOverlay: Polyline = Polyline()
     lateinit var destMarker: Marker
     lateinit var mLocationOverlay : MyLocationNewOverlay
@@ -84,7 +90,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.i("onCreate Called")
+
         //val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
+        //val scanQRCode: Button = findViewById(R.id.ScanQR)
+        //used for temp json reader
 
         /** Init for bottomNavigationView */
         val bottomNavigationView =
@@ -112,9 +121,79 @@ class MainActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.FloorPlanMenu -> {startActivity(Intent(applicationContext, FloorPlan::class.java))
-                    overridePendingTransition(0, 0)
-                    return@OnNavigationItemSelectedListener true
+                R.id.FloorPlanMenu -> {
+
+
+                    map!!.overlays.remove(destMarker)
+                    map!!.invalidate()
+
+
+                    destMarker = Marker(map)
+
+                    if (display_floor == 3) {
+                        display_floor = 1
+                    }
+                    else {
+                        display_floor += 1
+                    }
+
+                    if (end_floor != display_floor) {
+                        destMarker.position = GeoPoint(39.3260909, -82.1069895)
+                    } else {
+                        destMarker.position = endpoint
+                    }
+                    destMarker.setAnchor(
+                        Marker.ANCHOR_CENTER,
+                        Marker.ANCHOR_BOTTOM
+                    )
+                    destMarker.title = "Destination"
+                    map!!.overlays.add(destMarker)
+                    map!!.invalidate()
+
+
+                    map!!.overlays.remove(mLocationOverlay)
+
+                    if (current_floor == display_floor) {
+                        map!!.overlays.add(mLocationOverlay)
+                    }
+
+                    map!!.invalidate()
+
+
+                    if (display_floor == 1) {
+                        startLocationUpdates()
+                        map!!.overlays.add(roadOverlay)//gps route added only for ground floor view
+                        val d: Drawable? =
+                            ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
+                        if (d != null) {
+                            myGroundOverlay.image = d.mutate()
+                        }
+                    }
+                    else if (display_floor == 2) {
+                        map!!.overlays.remove(roadOverlay)
+                        stoplocationUpdates()
+                        val d: Drawable? =
+                            ResourcesCompat.getDrawable(resources, R.drawable.second_floor, null)
+                        if (d != null) {
+                            myGroundOverlay.image = d.mutate()
+                        }
+                    }
+                    else if (display_floor == 3) {
+                        val d: Drawable? =
+                            ResourcesCompat.getDrawable(resources, R.drawable.third_floor, null)
+                        if (d != null) {
+                            myGroundOverlay.image = d.mutate()
+                        }
+                    }
+
+                    map!!.invalidate()
+                    if (display_floor == 1) {
+                        map!!.controller.animateTo(mLocationOverlay.myLocation)
+                    }
+                    else {
+                        map!!.controller.animateTo(GeoPoint(39.3261779, -82.106899))
+                    }
+
                 }
                 R.id.VideoViewMenu -> {startActivity(Intent(applicationContext, Activity2::class.java))
                     overridePendingTransition(0, 0)
@@ -153,9 +232,35 @@ class MainActivity : AppCompatActivity() {
         map!!.overlays.add(mainTileOverlay)
         map!!.minZoomLevel = 12.0
 
+
         //map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setMultiTouchControls(true)
 
+         
+
+            end_floor = 1
+            val dest_loc = GeoPoint(39.3261779, -82.106899)
+
+
+            if (end_floor != current_floor) {
+                endpoint = GeoPoint(39.3260909, -82.1069895)
+            } else {
+                endpoint = dest_loc
+            }
+
+
+            //draw image of stocker interior on map
+
+            myGroundOverlay.setPosition(GeoPoint(39.3261511, -82.1069252))
+            val d: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
+            if (d != null) {
+                myGroundOverlay.setImage(d.mutate())
+            }
+            myGroundOverlay.setDimensions(130.0f)
+            myGroundOverlay.setTransparency(0.25f)
+            myGroundOverlay.setBearing(-54.5F)
+            map!!.overlays.add(myGroundOverlay)
+      
         val destFloor = 3
         val destLoc = GeoPoint(39.3261779, -82.106899)
 
@@ -364,16 +469,18 @@ class MainActivity : AppCompatActivity() {
         map.overlays.remove(roadOverlay)
         map.invalidate()
 
-        endpoint = if (floor != current_floor) {
-            GeoPoint(39.3260909, -82.1069895)
+
+
+        endpoint = GeoPoint(lat,lon)
+        end_floor = floor
+
+        destMarker = Marker(map)
+
+        if (floor != current_floor) {
+            destMarker.position = GeoPoint(39.3260909, -82.1069895)
         } else {
-            GeoPoint(lat, lon)
+            destMarker.position = endpoint
         }
-
-
-        destMarker =
-            Marker(map)
-        destMarker.position = endpoint
         destMarker.setAnchor(
             Marker.ANCHOR_CENTER,
             Marker.ANCHOR_BOTTOM
@@ -381,6 +488,9 @@ class MainActivity : AppCompatActivity() {
         destMarker.title = "Destination"
         map.overlays.add(destMarker)
 
+
+
+        if (mLocationOverlay.isFollowLocationEnabled) {
 
             runOnUiThread {
                 mapController.animateTo(mLocationOverlay.myLocation)
@@ -394,6 +504,7 @@ class MainActivity : AppCompatActivity() {
 
                 map.invalidate()
             }
+        }
 
     }
 
@@ -422,6 +533,7 @@ class MainActivity : AppCompatActivity() {
                     //if followlocation is disabled, i.e. user is indoors this is still required to update the route
                     map!!.overlays.remove(roadOverlay)
                     map!!.invalidate()
+
                     runOnUiThread {
 
                         val waypoints = ArrayList<GeoPoint>()
@@ -432,6 +544,20 @@ class MainActivity : AppCompatActivity() {
 
                         map!!.overlays.add(roadOverlay)
                         map!!.invalidate()
+
+                    if (mLocationOverlay.isMyLocationEnabled) {//only redraw roadOverlay if gps routing is enabled
+                        runOnUiThread {
+
+                            val waypoints = ArrayList<GeoPoint>()
+                            waypoints.add(mLocationOverlay.myLocation)
+                            waypoints.add(endpoint)
+                            roadOverlay =
+                                RoadManager.buildRoadOverlay(gpsroadManager.getRoad(waypoints))
+
+                            map!!.overlays.add(roadOverlay)
+                            map!!.invalidate()
+                        }
+
                     }
                 }
             }
@@ -439,6 +565,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 
     /**
      * Function: startLocationUpdates
@@ -618,7 +745,7 @@ class MainActivity : AppCompatActivity() {
             mLocationOverlay.myLocation
         }
         else {
-            mLocationOverlay.enableFollowLocation()
+            mLocationOverlay.enableMyLocation()
         }
 
 
