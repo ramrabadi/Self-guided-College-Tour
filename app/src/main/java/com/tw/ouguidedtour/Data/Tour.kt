@@ -22,19 +22,16 @@ class Tour: AppCompatActivity() {
     // Number of Stops Visited
     private var stops_visited: Int = 0
 
-    private var current_stop: String
-
     // Holds an array of Location Objects
     private lateinit var tour_stops: MutableList<Location>
 
     private lateinit var tour_stops_visited: MutableList<Boolean>
 
     init {
-        id = ""
+        id = "None"
         name = ""
         stops = 0
         stops_visited = 0
-        current_stop = ""
     }
 
     // input = the id of the location just scanned, should only be used once per tour
@@ -69,7 +66,6 @@ class Tour: AppCompatActivity() {
 
     fun load_list_of_stops(tour: Tour, qr_string: String, fileName: String, assets: AssetManager) {
         val obj = JSONObject(getAssetJsonData(assets, fileName))
-        tour.current_stop = qr_string
 
         // The tour id
         val input = get_tour_id(qr_string, fileName, assets)
@@ -109,9 +105,9 @@ class Tour: AppCompatActivity() {
                     }
                     val tempNavigationData:NavigationData = NavigationData()
 
-                    tempNavigationData.setLat((location.getString("lat")))
-                    tempNavigationData.setLong((location.getString("long")))
-                    tempNavigationData.setFloor((location.getString("floor")))
+                    tempNavigationData.setLat((location.getDouble("lat")))
+                    tempNavigationData.setLong((location.getDouble("long")))
+                    tempNavigationData.setFloor((location.getInt("floor")))
 
                     output.setNavigationData(tempNavigationData)
 
@@ -151,12 +147,16 @@ class Tour: AppCompatActivity() {
     fun addStopVisited() {
         stops_visited += 1
     }
-    fun setCurrentStop(temp: String) {
-        current_stop = temp
-    }
     // Change a location from not visited to visited
-    fun setToursStopsVisited(temp: Int) {
-        tour_stops_visited[temp] = true
+    fun setToursStopVisited(tour: Tour, temp: String) {
+        var x = 0
+        val list = tour.getTourStops()
+        val visited = tour.getTourStopsVisited()
+        for (i in 0 until list.size) {
+            if (list[i].getId() == temp && !visited[i]) {
+                tour_stops_visited[i] = true
+            }
+        }
     }
 
     // Variable getters
@@ -172,9 +172,6 @@ class Tour: AppCompatActivity() {
     fun getStopsVisited(): Int {
         return  stops_visited
     }
-    fun getCurrentStop(): String {
-        return current_stop
-    }
     fun getTourStops(): MutableList<Location> {
         return tour_stops;
     }
@@ -188,14 +185,26 @@ class Tour: AppCompatActivity() {
         val visited = tour.getTourStopsVisited()
         for (i in 0 until list.size) {
             if (list[i].getId() == input && !visited[i]) {
-                tour.setToursStopsVisited(i)
-                return list[i]
-            } else if (list[i].getId() == input && visited[i]) {
-                x.setId("Error")
-                return x
+                x = list[i]
             }
         }
-        x.setId("Error")
+
         return x
+    }
+
+    fun beenToEveryLocation(tour: Tour): Boolean {
+        return tour.getStops() == tour.getStopsVisited()
+    }
+
+    fun findNextUnvisitedLocation(tour: Tour): String {
+        val x: MutableList<Location> = tour.getTourStops()
+        val y: MutableList<Boolean> = tour.getTourStopsVisited()
+        lateinit var output: String
+        for ((i, j) in x.withIndex()) {
+            if (!y[i]) {
+                output = x[i].getId()
+            }
+        }
+        return output
     }
 }

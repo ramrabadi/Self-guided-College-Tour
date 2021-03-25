@@ -3,33 +3,33 @@ package com.tw.ouguidedtour.Data
 class NavigationData {
 
     // Stores the latitude and longitude as well as the floor the location is on.
-    private var lat: String
-    private var long: String
-    private var floor: String
+    private var lat: Double
+    private var long: Double
+    private var floor: Int
 
     init {
-        lat = ""
-        long = ""
-        floor = ""
+        lat = 0.0
+        long = 0.0
+        floor = 0
     }
 
-    fun setLat(temp: String) {
+    fun setLat(temp: Double) {
         lat = (temp)
     }
-    fun setLong(temp: String) {
+    fun setLong(temp: Double) {
         long = (temp)
     }
-    fun setFloor(temp: String) {
+    fun setFloor(temp: Int) {
         floor = (temp)
     }
 
-    fun getLat(): String {
+    fun getLat(): Double {
         return lat
     }
-    fun getLong(): String {
+    fun getLong(): Double {
         return long
     }
-    fun getFloor(): String {
+    fun getFloor(): Int {
         return floor
     }
 }
