@@ -1,6 +1,5 @@
 package com.tw.ouguidedtour
 
-
 import android.Manifest
 import android.Manifest.permission
 import android.content.Context
@@ -12,14 +11,11 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.os.StrictMode
 import android.preference.PreferenceManager
-import android.provider.MediaStore
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +24,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.zxing.integration.android.IntentIntegrator
-import com.journeyapps.barcodescanner.CaptureActivity
 import org.osmdroid.bonuspack.overlays.GroundOverlay
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
@@ -36,7 +31,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.MapTileProviderBasic
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
@@ -45,14 +39,13 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
 import com.google.android.gms.location.*
-//used for temp json reader
-import com.google.gson.reflect.TypeToken
+import com.tw.ouguidedtour.Data.NavigationData
+import com.tw.ouguidedtour.Data.Tour
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager
+import org.osmdroid.views.MapController
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import android.location.LocationListener as LocationListener
 
-
-//used for temp json reader
 
 class MainActivity : AppCompatActivity() {
 
@@ -63,8 +56,10 @@ class MainActivity : AppCompatActivity() {
     private var mCameraPermissionApproved: Boolean = false
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
+    val x: Int = 1235
 
     var endpoint: GeoPoint = GeoPoint(39.3260082, -82.1066659)
+
     var current_floor = 1
     var end_floor = 3
     var display_floor = 1
@@ -74,19 +69,20 @@ class MainActivity : AppCompatActivity() {
     lateinit var destMarker: Marker
     lateinit var mLocationOverlay : MyLocationNewOverlay
 
-    //location listener config
+    /** Location Listener Config */
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     private val INTERVAL: Long = 5000
     private val FASTEST_INTERVAL: Long = 10000
     lateinit var mLastLocation: Location
     internal lateinit var mLocationRequest: LocationRequest
 
-    private var qr_string = ""
+    /** Variables for TourActivity */
+    var tour: Tour = Tour()
+    private lateinit var currentLocation: com.tw.ouguidedtour.Data.Location
+    private lateinit var nextLocation: com.tw.ouguidedtour.Data.Location
+    private lateinit var nextLocationId: String
 
-
-    /** These are for the Checking if Wifi RTT is compatible with the phone **/
-    //private var deviceCompatible: Boolean = false
-    //private lateinit var mWifiRttManager: WifiRttManager
+    private var qrString = "None"
 
     private lateinit var mWifiManager: WifiManager
 
@@ -94,14 +90,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.i("onCreate Called")
+
+        //val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
         //val scanQRCode: Button = findViewById(R.id.ScanQR)
         //used for temp json reader
 
-
-        //init
+        /** Init for bottomNavigationView */
         val bottomNavigationView =
             findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        //Set
+        /** Set bottomNavigationView */
         bottomNavigationView.selectedItemId = R.id.MapMenu
         //Perform ItemSelectedListener
         bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
@@ -207,64 +204,39 @@ class MainActivity : AppCompatActivity() {
         });
 
 
-        mWifiManager = getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
-
-        // Check if user has Android API 28 or higher
-        if (Build.VERSION.SDK_INT >= 28) {
-            // Initialize Camera button
+        mWifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
 
-            locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
-            gpsroadManager.addRequestOption("vehicle=foot")
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+        gpsRoadManager.addRequestOption("vehicle=foot")
 
 
-            val policy: StrictMode.ThreadPolicy =
-                StrictMode.ThreadPolicy.Builder().permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-            Configuration.getInstance().isDebugMode = true
-            Configuration.getInstance().isDebugTileProviders = true
-            //create the map
-            val mainTileProvider = MapTileProviderBasic(applicationContext)
-            mainTileProvider.tileSource = TileSourceFactory.MAPNIK
-            val mainTileOverlay = TilesOverlay(mainTileProvider, this.baseContext)
-            mainTileOverlay.loadingBackgroundColor = (Color.TRANSPARENT)
+        val policy: StrictMode.ThreadPolicy =
+            StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+        Configuration.getInstance().isDebugMode = true
+        Configuration.getInstance().isDebugTileProviders = true
+        //create the map
+        val mainTileProvider = MapTileProviderBasic(applicationContext)
+        mainTileProvider.tileSource = TileSourceFactory.MAPNIK
+        val mainTileOverlay = TilesOverlay(mainTileProvider, this.baseContext)
+        mainTileOverlay.loadingBackgroundColor = (Color.TRANSPARENT)
 
-            map = findViewById<View>(R.id.map) as MapView
+        map = findViewById<View>(R.id.map) as MapView
 
-            val mapController = map!!.controller
-            mapController.setZoom(18.0)
-            mapController.setCenter(GeoPoint(39.3261779, -82.106899))
+        val mapController = map!!.controller
+        mapController.setZoom(18.0)
+        mapController.setCenter(GeoPoint(39.3261779, -82.106899))
 
-            map!!.setUseDataConnection(true)
-            map!!.overlays.add(mainTileOverlay)
-            map!!.minZoomLevel = 12.0
-
-            //map!!.setTileSource(TileSourceFactory.MAPNIK)
-            map!!.setMultiTouchControls(true)
-
-            /* Tile provider for interior map This will draw indoor map, but is not currently compatible with routefinding
-            
-            val indoorTileprovider = MapTileProviderBasic(applicationContext)
-            val indoorTileSource = XYTileSource(
-                "first_floor",
-                15,
-                19,
-                256,
-                ".png",
-                arrayOf("")
-            )
-            
-             
-
-            indoorTileprovider.tileSource = indoorTileSource
-            val indoorTileOverlay = TilesOverlay(indoorTileprovider, this.baseContext)
-            indoorTileOverlay.loadingBackgroundColor = Color.TRANSPARENT
-            map!!.overlays.add(indoorTileOverlay)
+        map!!.setUseDataConnection(true)
+        map!!.overlays.add(mainTileOverlay)
+        map!!.minZoomLevel = 12.0
 
 
-             */
+        //map!!.setTileSource(TileSourceFactory.MAPNIK)
+        map!!.setMultiTouchControls(true)
 
-
+         
 
             end_floor = 1
             val dest_loc = GeoPoint(39.3261779, -82.106899)
@@ -288,63 +260,69 @@ class MainActivity : AppCompatActivity() {
             myGroundOverlay.setTransparency(0.25f)
             myGroundOverlay.setBearing(-54.5F)
             map!!.overlays.add(myGroundOverlay)
+      
+        val destFloor = 3
+        val destLoc = GeoPoint(39.3261779, -82.106899)
 
-
-
-
-            destMarker =
-                Marker(map)
-            destMarker.position = endpoint
-            destMarker.setAnchor(
-                Marker.ANCHOR_CENTER,
-                Marker.ANCHOR_BOTTOM
-            )
-            destMarker.setTitle("Destination")
-            map!!.overlays.add(destMarker)
-
-            //enable location tracking
-            mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
-            mLocationOverlay.enableMyLocation()
-            mLocationOverlay.enableFollowLocation()
-
-            //enable navigation
-
-            val waypoints = ArrayList<GeoPoint>()
-
-            mLocationOverlay.runOnFirstFix {
-                runOnUiThread {
-
-                    mapController.animateTo(mLocationOverlay.myLocation)
-                    mapController.setZoom(18.0)
-                    val currentloc = mLocationOverlay.myLocation
-                    waypoints.add(currentloc)
-                    waypoints.add(endpoint)
-                    val road: Road = gpsroadManager.getRoad(waypoints)
-                    roadOverlay= RoadManager.buildRoadOverlay(road)
-                    map!!.overlays.add(roadOverlay)
-
-                }
-            }
-
-            map!!.overlays.add(mLocationOverlay)
-
-            startLocationUpdates()
-            map!!.invalidate()//refresh the map to apply changes
-
-            //load osmdroid configuration
-            val ctx = applicationContext
-            Configuration.getInstance()
-                .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
-
-
-            //isDeviceCompatible()
-
-
-            // If Android API is below 28, display floor plan
+        if (destFloor != currentFloor) {
+            endpoint = GeoPoint(39.3260909, -82.1069895)
         } else {
-            val below28API = Intent(this, FloorPlan::class.java)
-            startActivity(below28API)
+            endpoint = destLoc
         }
+
+        /** Draw image of Storcker on map */
+        val myGroundOverlay = GroundOverlay()
+        myGroundOverlay.position = GeoPoint(39.3261511, -82.1069252)
+        val d: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
+        if (d != null) {
+            myGroundOverlay.image = d.mutate()
+        }
+        myGroundOverlay.setDimensions(130.0f)
+        myGroundOverlay.transparency = 0.25f
+        myGroundOverlay.bearing = -54.5F
+        map!!.overlays.add(myGroundOverlay)
+
+        destMarker =
+            Marker(map)
+        destMarker.position = endpoint
+        destMarker.setAnchor(
+            Marker.ANCHOR_CENTER,
+            Marker.ANCHOR_BOTTOM
+        )
+        destMarker.title = "Destination"
+        map!!.overlays.add(destMarker)
+
+        //enable location tracking
+        mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
+        mLocationOverlay.enableMyLocation()
+        mLocationOverlay.enableFollowLocation()
+
+        @Suppress("SpellCheckingInspection") val waypoints = ArrayList<GeoPoint>()
+
+        mLocationOverlay.runOnFirstFix {
+            runOnUiThread {
+
+                mapController.animateTo(mLocationOverlay.myLocation)
+                mapController.setZoom(18.0)
+                val currentloc = mLocationOverlay.myLocation
+                waypoints.add(currentloc)
+                waypoints.add(endpoint)
+                val road: Road = gpsRoadManager.getRoad(waypoints)
+                roadOverlay= RoadManager.buildRoadOverlay(road)
+                map!!.overlays.add(roadOverlay)
+
+            }
+        }
+
+        map!!.overlays.add(mLocationOverlay)
+
+        startLocationUpdates()
+        map!!.invalidate()//refresh the map to apply changes
+
+        //load osmdroid configuration
+        val ctx = applicationContext
+        Configuration.getInstance()
+                .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
 
         checkForPermissions(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -357,11 +335,9 @@ class MainActivity : AppCompatActivity() {
             ACCESS_CAMERA_RQ
         )
 
-
-
     }
 
-    // Sends QR data to Database activity
+    // Sets QR code value for use in TourActivity
     override fun onActivityResult(requestCode: Int, resultCode: Int,
                                   data: Intent ?
     ) {
@@ -373,6 +349,38 @@ class MainActivity : AppCompatActivity() {
                 val dataIntent = intent
                 dataIntent.putExtra("id", result.contents)
                 startActivity(dataIntent)
+                qrString = result.contents
+
+                if (tour.getId() == "None") {
+                    // TODO Change Test.json to config file variable
+                    tour.load_list_of_stops(tour, qrString, "Test.json", assets)
+                }
+
+                val tourIntent = Intent(this, TourActivity::class.java)
+                if (qrString == nextLocationId) {
+
+                    tour.setToursStopVisited(tour, qrString)
+                    currentLocation = nextLocation
+
+                    nextLocationId = nextLocation.getNextLocationId()
+                    nextLocation = tour.getLocation(tour, nextLocationId)
+
+                    tourIntent.putExtra("name", currentLocation.getName())
+                    tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                    tourIntent.putExtra("description", currentLocation.getDescription())
+                    startActivity(tourIntent)
+                } else {
+                    tour.setToursStopVisited(tour, qrString)
+                    currentLocation = tour.getLocation(tour, qrString)
+
+                    nextLocationId = nextLocation.getNextLocationId()
+                    nextLocation = tour.getLocation(tour, nextLocationId)
+
+                    tourIntent.putExtra("name", currentLocation.getName())
+                    tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                    tourIntent.putExtra("description", currentLocation.getDescription())
+                    startActivity(tourIntent)
+                }
 
             }
         } else {
@@ -380,16 +388,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     /** Lifecycle Methods **/
 
     override fun onStart() {
         super.onStart()
         Timber.i("onStart Called")
-
-        // Start getting GPS location if outside
-
-        // Start getting Wifi RTT ranging if inside
     }
 
     override fun onResume() {
@@ -409,6 +412,7 @@ class MainActivity : AppCompatActivity() {
         mWifiEnabled = mWifiManager.isWifiEnabled
         Timber.i("mWifiEnabled: $mWifiEnabled")
 
+        //TODO Tell the user why we need this, to load the maps
         if (!mWifiEnabled) {
             val builder = AlertDialog.Builder(this)
             builder.apply {
@@ -420,17 +424,16 @@ class MainActivity : AppCompatActivity() {
             dialog.show()
         }
 
-
-        // Resume playing video
-        map!!.onResume()//resume map updating of ui
+        // Resume map updating of ui
+        map!!.onResume()
     }
 
     override fun onPause() {
         super.onPause()
         Timber.i("onPause Called")
 
-        // Pause video
-        map!!.onPause()//pause updating of map ui
+        // Pause updating of map ui
+        map!!.onPause()
     }
 
     override fun onStop() {
@@ -443,15 +446,13 @@ class MainActivity : AppCompatActivity() {
         Timber.i("onDestroy Called")
 
         // Stop getting GPS location
-        stoplocationUpdates()
-
-        // Stop getting Wifi RTT ranging
+        stopLocationUpdates()
     }
     
     private fun updateDestination(
         //data for next stop
         lat: Double,
-        lon: Double ,
+        lon: Double,
         floor: Int,
 
         //the rest of this is arguments so that the map can be updated
@@ -462,7 +463,7 @@ class MainActivity : AppCompatActivity() {
         ) {
 
 
-        val waypoints = ArrayList<GeoPoint>()
+        @Suppress("SpellCheckingInspection") val waypoints = ArrayList<GeoPoint>()
 
         map.overlays.remove(destMarker)
         map.overlays.remove(roadOverlay)
@@ -484,9 +485,8 @@ class MainActivity : AppCompatActivity() {
             Marker.ANCHOR_CENTER,
             Marker.ANCHOR_BOTTOM
         )
-        destMarker.setTitle("Destination")
+        destMarker.title = "Destination"
         map.overlays.add(destMarker)
-
 
 
 
@@ -498,7 +498,7 @@ class MainActivity : AppCompatActivity() {
                 val currentloc = mLocationOverlay.myLocation
                 waypoints.add(currentloc)
                 waypoints.add(endpoint)
-                val road: Road = gpsroadManager.getRoad(waypoints)
+                val road: Road = gpsRoadManager.getRoad(waypoints)
                 roadOverlay = RoadManager.buildRoadOverlay(road)
                 map.overlays.add(roadOverlay)
 
@@ -519,18 +519,32 @@ class MainActivity : AppCompatActivity() {
 
         fun onLocationChanged(location: Location) {
             mLastLocation = location
+
+            // Need to keep can return null.
+            @Suppress("SENSELESS_COMPARISON")
             if (mLastLocation != null) {
 
                 //check for switch to/from indoor navigation
                 if (mLocationOverlay.myLocation != null) {
                     gpsEnableCheck()
 
-
                     //update and replace route overlay
                     //note overlay location is used and not actual location
                     //if followlocation is disabled, i.e. user is indoors this is still required to update the route
                     map!!.overlays.remove(roadOverlay)
                     map!!.invalidate()
+
+                    runOnUiThread {
+
+                        val waypoints = ArrayList<GeoPoint>()
+                        waypoints.add(mLocationOverlay.myLocation)
+                        waypoints.add(endpoint)
+                        roadOverlay =
+                            RoadManager.buildRoadOverlay(gpsRoadManager.getRoad(waypoints))
+
+                        map!!.overlays.add(roadOverlay)
+                        map!!.invalidate()
+
                     if (mLocationOverlay.isMyLocationEnabled) {//only redraw roadOverlay if gps routing is enabled
                         runOnUiThread {
 
@@ -543,6 +557,7 @@ class MainActivity : AppCompatActivity() {
                             map!!.overlays.add(roadOverlay)
                             map!!.invalidate()
                         }
+
                     }
                 }
             }
@@ -551,8 +566,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun startLocationUpdates() {
 
+    /**
+     * Function: startLocationUpdates
+     *
+     * Purpose: Starts sending location requests and is ready to recieve them
+     *
+     * Pre-condition: Has permissions for "Access Fine Location", and if not returns nothing
+     *
+     * Post-condition: starts a callback to receive location updates
+     */
+    private fun startLocationUpdates() {
         // Create the location request to start receiving updates
         mLocationRequest = LocationRequest()
         mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -578,8 +602,23 @@ class MainActivity : AppCompatActivity() {
             Looper.myLooper())
     }
 
-    private fun stoplocationUpdates() {
+    /**
+     * Function: stopLocationUpdates
+     *
+     * Purpose: Stops receiving location updates
+     *
+     * Post-condition: Stops sending / receiving location information.
+     */
+    private fun stopLocationUpdates() {
         mFusedLocationProviderClient!!.removeLocationUpdates(mLocationCallback)
+    }
+
+    /** Tour Functions */
+    // TODO use tempNavigationData.getLat() for lat
+    fun setNewPath() {
+        val tempNavigationData: NavigationData = nextLocation.getNavData()
+
+        //updateDestination(tempNavigationData.getLat())
     }
 
     /** Functions which check for permission and request permissions **/
@@ -690,61 +729,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**Checks if Wifi Rtt is supported
-     *
-     *  This isn't required for use, but is needed for error handling.
-     *
-     * **/
+    /** ----------------------------------------------------------------------- **/
 
-    private fun isDeviceCompatible(){
-        /** Error this always returns false **/
-        val isCompatible = this.packageManager.hasSystemFeature(PackageManager.FEATURE_WIFI_RTT)
-
-        Timber.i("isCompatible: $isCompatible")
-//        if(isCompatible){
-//            Timber.i("Device is compatible")
-//            Toast.makeText(applicationContext, "Wifi Rtt is Supported", Toast.LENGTH_SHORT).show()
-//            //deviceCompatible = true
-//
-//        }else{
-//            val wifiRttManager: WifiRttManager =getSystemService(Context.WIFI_RTT_RANGING_SERVICE) as WifiRttManager
-//            val myReceiver = object : BroadcastReceiver(){
-//                override fun onReceive(context: Context, intent: Intent){
-//                    if(wifiRttManager.isAvailable){
-//                        Timber.i("Device is compatible")
-//                        Toast.makeText(
-//                            applicationContext,
-//                            "Wifi Rtt is Supported",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }else{
-//                        Timber.i("Device is not compatible")
-//                        Toast.makeText(
-//                            applicationContext,
-//                            "Wifi Rtt is not Supported",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                }
-//            }
-//            registerReceiver(
-//                myReceiver,
-//                IntentFilter(WifiRttManager.ACTION_WIFI_RTT_STATE_CHANGED)
-//            )
-//        }
-    }
-
-    /**Checks if location is within stocker
-     * disable following gps location on map to prevent innacuracy from disrupting navigation
+    /**
+     * Checks if location is within Stocker
+     * disable following gps location on map to prevent inaccuracy from disrupting navigation
      * Currently set for 30 m from center of building
-     * reenables if outside that radius
+     * re-enables if outside that radius
      */
     private fun gpsEnableCheck() {
         val enableLoc = GeoPoint(39.3261291,-82.1069648)//coordinates for center of stocker
 
 
         if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 30.0 ) {
-            mLocationOverlay.disableMyLocation()
+            mLocationOverlay.myLocation
         }
         else {
             mLocationOverlay.enableMyLocation()
