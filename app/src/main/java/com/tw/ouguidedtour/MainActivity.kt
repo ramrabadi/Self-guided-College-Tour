@@ -39,12 +39,19 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
 import com.google.android.gms.location.*
+import com.graphhopper.GHRequest
+import com.graphhopper.GHResponse
+import com.graphhopper.reader.osm.GraphHopperOSM
+import com.graphhopper.routing.util.EncodingManager
+import com.graphhopper.util.Parameters
+import com.graphhopper.util.PointList
 import com.tw.ouguidedtour.Data.NavigationData
 import com.tw.ouguidedtour.Data.Tour
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager
 import org.osmdroid.views.MapController
-import org.osmdroid.tileprovider.tilesource.XYTileSource
-import android.location.LocationListener as LocationListener
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -58,14 +65,18 @@ class MainActivity : AppCompatActivity() {
     private var map: MapView? = null
     val x: Int = 1235
 
-    var endpoint: GeoPoint = GeoPoint(39.3260082, -82.1066659)
+    var endpoint: GeoPoint = GeoPoint(39.3262283, -82.1068219)
 
-    var current_floor = 1
-    var end_floor = 3
-    var display_floor = 1
-    val gpsroadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
+    var currentFloor = 1
+    var endFloor = 3
+    var displayFloor = 1
+    val gpsRoadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
+    var hopper1 = GraphHopperOSM()
+    var hopper2 = GraphHopperOSM()//graph data and routing for each floor
+    var hopper3 = GraphHopperOSM()
     val myGroundOverlay = GroundOverlay()
     var roadOverlay: Polyline = Polyline()
+    var indoorOverlay: Polyline = Polyline()
     lateinit var destMarker: Marker
     lateinit var mLocationOverlay : MyLocationNewOverlay
 
@@ -130,14 +141,14 @@ class MainActivity : AppCompatActivity() {
 
                     destMarker = Marker(map)
 
-                    if (display_floor == 3) {
-                        display_floor = 1
+                    if (displayFloor == 3) {
+                        displayFloor = 1
                     }
                     else {
-                        display_floor += 1
+                        displayFloor += 1
                     }
 
-                    if (end_floor != display_floor) {
+                    if (endFloor != displayFloor) {
                         destMarker.position = GeoPoint(39.3260909, -82.1069895)
                     } else {
                         destMarker.position = endpoint
@@ -147,20 +158,22 @@ class MainActivity : AppCompatActivity() {
                         Marker.ANCHOR_BOTTOM
                     )
                     destMarker.title = "Destination"
-                    map!!.overlays.add(destMarker)
+                    if (displayFloor == currentFloor || displayFloor == endFloor) {
+                        map!!.overlays.add(destMarker)
+                    }
                     map!!.invalidate()
 
 
                     map!!.overlays.remove(mLocationOverlay)
 
-                    if (current_floor == display_floor) {
+                    if (currentFloor == displayFloor) {
                         map!!.overlays.add(mLocationOverlay)
                     }
 
                     map!!.invalidate()
 
 
-                    if (display_floor == 1) {
+                    if (displayFloor == 1) {
                         startLocationUpdates()
                         map!!.overlays.add(roadOverlay)//gps route added only for ground floor view
                         val d: Drawable? =
@@ -169,16 +182,16 @@ class MainActivity : AppCompatActivity() {
                             myGroundOverlay.image = d.mutate()
                         }
                     }
-                    else if (display_floor == 2) {
+                    else if (displayFloor == 2) {
                         map!!.overlays.remove(roadOverlay)
-                        stoplocationUpdates()
+                        stopLocationUpdates()
                         val d: Drawable? =
                             ResourcesCompat.getDrawable(resources, R.drawable.second_floor, null)
                         if (d != null) {
                             myGroundOverlay.image = d.mutate()
                         }
                     }
-                    else if (display_floor == 3) {
+                    else if (displayFloor == 3) {
                         val d: Drawable? =
                             ResourcesCompat.getDrawable(resources, R.drawable.third_floor, null)
                         if (d != null) {
@@ -186,8 +199,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
+                    updateIndoor()
+
                     map!!.invalidate()
-                    if (display_floor == 1) {
+                    if (displayFloor == 1) {
                         map!!.controller.animateTo(mLocationOverlay.myLocation)
                     }
                     else {
@@ -236,42 +251,12 @@ class MainActivity : AppCompatActivity() {
         //map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setMultiTouchControls(true)
 
-         
-
-            end_floor = 1
-            val dest_loc = GeoPoint(39.3261779, -82.106899)
-
-
-            if (end_floor != current_floor) {
-                endpoint = GeoPoint(39.3260909, -82.1069895)
-            } else {
-                endpoint = dest_loc
-            }
-
-
-            //draw image of stocker interior on map
-
-            myGroundOverlay.setPosition(GeoPoint(39.3261511, -82.1069252))
-            val d: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
-            if (d != null) {
-                myGroundOverlay.setImage(d.mutate())
-            }
-            myGroundOverlay.setDimensions(130.0f)
-            myGroundOverlay.setTransparency(0.25f)
-            myGroundOverlay.setBearing(-54.5F)
-            map!!.overlays.add(myGroundOverlay)
       
         val destFloor = 3
         val destLoc = GeoPoint(39.3261779, -82.106899)
 
-        if (destFloor != currentFloor) {
-            endpoint = GeoPoint(39.3260909, -82.1069895)
-        } else {
-            endpoint = destLoc
-        }
 
         /** Draw image of Storcker on map */
-        val myGroundOverlay = GroundOverlay()
         myGroundOverlay.position = GeoPoint(39.3261511, -82.1069252)
         val d: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
         if (d != null) {
@@ -284,7 +269,12 @@ class MainActivity : AppCompatActivity() {
 
         destMarker =
             Marker(map)
-        destMarker.position = endpoint
+        if (endFloor == currentFloor) {
+            destMarker.position = endpoint
+        }
+        else {
+            destMarker.position = GeoPoint(39.3260909, -82.1069895)
+        }
         destMarker.setAnchor(
             Marker.ANCHOR_CENTER,
             Marker.ANCHOR_BOTTOM
@@ -297,9 +287,96 @@ class MainActivity : AppCompatActivity() {
         mLocationOverlay.enableMyLocation()
         mLocationOverlay.enableFollowLocation()
 
+
+        // create graphhopper instances
+        val osmFile1 = File(applicationContext.filesDir, "floor1.osm")
+        val osmFile2 = File(applicationContext.filesDir,"floor2.osm")
+        val osmFile3 = File(applicationContext.filesDir,"floor3.osm")
+        val graphFolder1 = File(applicationContext.filesDir, "floor1")
+        val graphFolder2 = File(applicationContext.filesDir, "floor2")
+        val graphFolder3 = File(applicationContext.filesDir, "floor3")
+        if (!graphFolder1.exists()) {
+            graphFolder1.mkdir()
+        }
+        if (!graphFolder2.exists()) {
+            graphFolder2.mkdir()
+        }
+        if (!graphFolder3.exists()) {
+            graphFolder3.mkdir()
+        }
+        if (!osmFile1.exists()) {
+
+            val bufferSize = 1024
+
+            val filein: InputStream = this.resources.openRawResource(R.raw.floor1)
+            val fileout = FileOutputStream(osmFile1)
+
+            try {
+                filein.copyTo(fileout, bufferSize)
+            } finally {
+                filein.close()
+                fileout.flush()
+                filein.close()
+            }
+
+        }
+        if (!osmFile2.exists()) {
+
+            val bufferSize = 1024
+
+            val filein: InputStream = this.resources.openRawResource(R.raw.floor2)
+            val fileout = FileOutputStream(osmFile2)
+
+            try {
+                filein.copyTo(fileout, bufferSize)
+            } finally {
+                filein.close()
+                fileout.flush()
+                filein.close()
+            }
+
+        }
+        if (!osmFile3.exists()) {
+
+            val bufferSize = 1024
+
+            val filein: InputStream = this.resources.openRawResource(R.raw.floor3)
+            val fileout = FileOutputStream(osmFile3)
+
+            try {
+                filein.copyTo(fileout, bufferSize)
+            } finally {
+                filein.close()
+                fileout.flush()
+                filein.close()
+            }
+
+        }
+
+        hopper1.osmFile = osmFile1.absolutePath
+        hopper1.setMinNetworkSize(1, 1)//graph is custom so import all nodes
+        hopper1.encodingManager = EncodingManager("car, foot")
+        hopper1.graphHopperLocation = graphFolder1.absolutePath
+        hopper1.importOrLoad()
+
+        hopper2.osmFile = osmFile2.absolutePath
+        hopper2.setMinNetworkSize(1, 1)
+        hopper2.encodingManager = EncodingManager("car, foot")
+        hopper2.graphHopperLocation = graphFolder2.absolutePath
+        hopper2.importOrLoad()
+
+        hopper3.osmFile = osmFile3.absolutePath
+        hopper3.setMinNetworkSize(1, 1)
+        hopper3.encodingManager = EncodingManager("car, foot")
+        hopper3.graphHopperLocation = graphFolder3.absolutePath
+        hopper3.importOrLoad()
+
+
+
         @Suppress("SpellCheckingInspection") val waypoints = ArrayList<GeoPoint>()
 
         mLocationOverlay.runOnFirstFix {
+            updateIndoor()
             runOnUiThread {
 
                 mapController.animateTo(mLocationOverlay.myLocation)
@@ -310,6 +387,7 @@ class MainActivity : AppCompatActivity() {
                 val road: Road = gpsRoadManager.getRoad(waypoints)
                 roadOverlay= RoadManager.buildRoadOverlay(road)
                 map!!.overlays.add(roadOverlay)
+
 
             }
         }
@@ -472,7 +550,7 @@ class MainActivity : AppCompatActivity() {
 
 
         endpoint = GeoPoint(lat,lon)
-        end_floor = floor
+        endFloor = floor
 
         destMarker = Marker(map)
 
@@ -487,10 +565,10 @@ class MainActivity : AppCompatActivity() {
         )
         destMarker.title = "Destination"
         map.overlays.add(destMarker)
+        map.invalidate()
 
 
-
-        if (mLocationOverlay.isFollowLocationEnabled) {
+        if (mLocationOverlay.isMyLocationEnabled) {
 
             runOnUiThread {
                 mapController.animateTo(mLocationOverlay.myLocation)
@@ -534,17 +612,6 @@ class MainActivity : AppCompatActivity() {
                     map!!.overlays.remove(roadOverlay)
                     map!!.invalidate()
 
-                    runOnUiThread {
-
-                        val waypoints = ArrayList<GeoPoint>()
-                        waypoints.add(mLocationOverlay.myLocation)
-                        waypoints.add(endpoint)
-                        roadOverlay =
-                            RoadManager.buildRoadOverlay(gpsRoadManager.getRoad(waypoints))
-
-                        map!!.overlays.add(roadOverlay)
-                        map!!.invalidate()
-
                     if (mLocationOverlay.isMyLocationEnabled) {//only redraw roadOverlay if gps routing is enabled
                         runOnUiThread {
 
@@ -552,7 +619,7 @@ class MainActivity : AppCompatActivity() {
                             waypoints.add(mLocationOverlay.myLocation)
                             waypoints.add(endpoint)
                             roadOverlay =
-                                RoadManager.buildRoadOverlay(gpsroadManager.getRoad(waypoints))
+                                RoadManager.buildRoadOverlay(gpsRoadManager.getRoad(waypoints))
 
                             map!!.overlays.add(roadOverlay)
                             map!!.invalidate()
@@ -560,10 +627,10 @@ class MainActivity : AppCompatActivity() {
 
                     }
                 }
+
             }
 
         }
-
     }
 
 
@@ -742,13 +809,84 @@ class MainActivity : AppCompatActivity() {
 
 
         if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 30.0 ) {
-            mLocationOverlay.myLocation
+            mLocationOverlay.disableMyLocation()
         }
         else {
             mLocationOverlay.enableMyLocation()
         }
 
 
+    }
+
+    fun updateIndoor() {
+        map!!.overlays.remove(indoorOverlay)
+        map!!.invalidate()
+
+        var startPoint: GeoPoint = GeoPoint(39.3260909, -82.1069895)
+        var routePoint: GeoPoint = GeoPoint(39.3260909, -82.1069895)
+        val elevator: GeoPoint = GeoPoint(39.3260909, -82.1069895)
+        val door: GeoPoint = GeoPoint(39.3260058,-82.1066644)
+
+        if (displayFloor == currentFloor) {
+            if (displayFloor == 1) {
+                startPoint = door
+            }
+            else {
+                startPoint = mLocationOverlay.myLocation
+            }
+
+            if (currentFloor == endFloor) {
+                routePoint = endpoint
+            }
+            else {
+                routePoint = elevator
+            }
+        }
+        else {
+            startPoint = elevator
+            if (displayFloor == endFloor) {
+                routePoint = endpoint
+            }
+        }
+
+
+
+        if (displayFloor == currentFloor || displayFloor == endFloor ) {
+            val req = GHRequest(
+                startPoint.latitude,startPoint.longitude, //start
+                routePoint.latitude,routePoint.longitude       //end
+            ).setAlgorithm(Parameters.Algorithms.DIJKSTRA_BI) //setWeighting("fastest");
+            lateinit var rsp: GHResponse
+            when (displayFloor) {
+                1 -> {
+                    rsp = hopper1.route(req)
+                }
+                2 -> {
+                    rsp = hopper2.route(req)
+                }
+                3 -> {
+                    rsp = hopper3.route(req)
+                }
+            }
+
+
+            runOnUiThread {
+                if (!rsp.hasErrors()) {
+                    indoorOverlay = Polyline()
+                    val tmp: PointList = rsp.best.points
+                    for (i in 0 until rsp.best.points.size) {
+                        indoorOverlay.addPoint(GeoPoint(tmp.getLatitude(i), tmp.getLongitude(i)))
+                    }
+
+                    indoorOverlay.color = Color.BLUE
+                    indoorOverlay.width = 5f
+
+                    map!!.overlays.add(indoorOverlay)
+                    map!!.invalidate()
+
+                }
+            }
+        }
     }
 
 }
