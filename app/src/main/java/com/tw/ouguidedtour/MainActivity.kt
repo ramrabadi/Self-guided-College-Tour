@@ -89,9 +89,9 @@ class MainActivity : AppCompatActivity() {
 
     /** Variables for TourActivity */
     var tour: Tour = Tour()
-    private lateinit var currentLocation: com.tw.ouguidedtour.Data.Location
-    private lateinit var nextLocation: com.tw.ouguidedtour.Data.Location
-    private lateinit var nextLocationId: String
+    private var currentLocation: com.tw.ouguidedtour.Data.Location = com.tw.ouguidedtour.Data.Location()
+    private var nextLocation: com.tw.ouguidedtour.Data.Location = com.tw.ouguidedtour.Data.Location()
+    private var nextLocationId: String = "None"
 
     private var qrString = "None"
 
@@ -431,6 +431,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (tour.getId() == "None") {
                     // TODO Change Test.json to config file variable
+                    tour.setId(tour.get_tour_id(qrString,"Test.json", assets))
                     tour.load_list_of_stops(tour, qrString, "Test.json", assets)
                 }
 
