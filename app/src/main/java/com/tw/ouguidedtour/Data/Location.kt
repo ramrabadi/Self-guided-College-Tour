@@ -2,28 +2,38 @@ package com.tw.ouguidedtour.Data
 
 class Location {
     // Id of the Location, never seen or used by the user
-    private lateinit var id: String
+    private var id: String
 
     // The name of the Location(stop), (i.e., the room number or location name)
-    private lateinit var name: String
+    private var name: String
 
     // The id of the next location
-    private lateinit var next_location_id: String
+    private var next_location_id: String
 
     // The url of the video
-    private lateinit var video_url: String
+    private var video_url: String
 
     // The text description of the location
-    private lateinit var description: String
+    private var description: String
 
     // List of images of this location
-    private lateinit var pictures: MutableList<String>
+    private var picture: String
 
     // The id of the tour the location is apart of
-    private lateinit var id_of_tour: String
+    private var id_of_tour: String
 
-    private lateinit var navigationData: NavigationData
+    private var navigationData: NavigationData
 
+    init {
+        id = "None"
+        name = "None"
+        next_location_id = "None"
+        video_url = "None"
+        description = "None"
+        picture = "None"
+        id_of_tour = "None"
+        navigationData = NavigationData()
+    }
     //Setters
     fun setId(temp: String) {
         id = temp
@@ -44,7 +54,7 @@ class Location {
         id_of_tour = temp
     }
     fun setPicture(temp: String) {
-        pictures.add(temp)
+        picture = temp
     }
     fun setNavigationData(temp: NavigationData) {
         navigationData = temp
@@ -70,8 +80,8 @@ class Location {
     fun getIdOfTour(): String {
         return  id_of_tour
     }
-    fun getPictures(): List<String> {
-        return pictures
+    fun getPicture(): String {
+        return picture
     }
     fun getNavData(): NavigationData {
         return  navigationData
