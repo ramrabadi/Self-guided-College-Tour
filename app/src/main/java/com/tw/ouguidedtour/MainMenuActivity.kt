@@ -14,11 +14,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
+import android.app.AlertDialog.Builder
+
 
 class MainMenuActivity: AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle ? ) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
+
         if (checkPermission()) {
             val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
             val mapButton: Button = findViewById(R.id.floorPlanButton)

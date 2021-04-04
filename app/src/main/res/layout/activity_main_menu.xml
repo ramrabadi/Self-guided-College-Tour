@@ -76,11 +76,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="#006749"
             android:layout_weight="1">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:background="#006749"
+                android:background="@drawable/border_for_cardview"
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/textView3"
@@ -89,9 +88,8 @@
                     android:layout_below="@id/scan"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:background="#006749"
                     android:text="Scan"
-                    android:textColor="#000000"
+                    android:textColor="@color/white"
                     android:textSize="24sp"
                     app:fontFamily="@font/baloo" />
                 <ImageView
@@ -116,7 +114,7 @@
             android:layout_weight="1">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:background="#006749"
+                android:background="@drawable/border_for_cardview"
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/textView4"
@@ -125,9 +123,8 @@
                     android:layout_below="@id/imageView3"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:background="#006749"
                     android:text="See Map"
-                    android:textColor="#000000"
+                    android:textColor="@color/white"
                     android:textSize="24sp"
                     app:fontFamily="@font/baloo" />
                 <ImageView
@@ -164,7 +161,7 @@
             android:layout_weight="1">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:background="#006749"
+                android:background="@drawable/border_for_cardview"
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/textView6"
@@ -174,7 +171,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:text="Tutorial"
-                    android:textColor="#000000"
+                    android:textColor="@color/white"
                     android:textSize="24sp"
                     app:fontFamily="@font/baloo" />
                 <ImageView
@@ -201,7 +198,7 @@
             android:layout_weight="1">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:background="#006749"
+                android:background="@drawable/border_for_cardview"
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/textView9"
@@ -211,7 +208,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:text="Floor Plan"
-                    android:textColor="#000000"
+                    android:textColor="@color/white"
                     android:textSize="24sp"
                     app:fontFamily="@font/baloo"  />
                 <ImageView
