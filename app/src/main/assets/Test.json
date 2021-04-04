@@ -2,25 +2,121 @@
 {
   "Tours": [
     {
-      "id": "",
+      "id": "testtour1",
       "name": "",
       "stops": 10,
       "Locations": [
         {
-          "id": "",
-          "name": "",
-          "next_stop": "",
+          "id": "firstfloorlab",
+          "name": "1st floor lab",
+          "next_location_id": "thirdfloorlab",
           "video_url": "",
-          "Description": "",
-          "tour_id": ""
+          "description": "Linux Lab on the first floor used for CS labs and for use by all CS students",
+          "tour_id": "testtour1"
         },
         {
-          "id": "",
-          "name": "",
-          "next_stop": "",
+          "id": "thirdfloorlab",
+          "name": "3rd floor lab",
+          "next_location_id": "",
           "video_url": "",
-          "Description": "",
-          "tour_id": ""
+          "description": "Linux Lab on the third floor used for CS labs and for use by all CS students",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop3",
+          "name": "3rd Stop",
+          "next_location_id": "4th stop",
+          "video_url": "",
+          "description": "3rd stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop4",
+          "name": "4th Stop",
+          "next_location_id": "5th Stop",
+          "video_url": "",
+          "description": "4th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop5",
+          "name": "5th Stop",
+          "next_location_id": "6th Stop",
+          "video_url": "",
+          "description": "5th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop6",
+          "name": "6th Stop",
+          "next_location_id": "7th Stop",
+          "video_url": "",
+          "description": "6th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop7",
+          "name": "7th Stop",
+          "next_location_id": "8th Stop",
+          "video_url": "",
+          "description": "7th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop8",
+          "name": "8th Stop",
+          "next_location_id": "9th Stop",
+          "video_url": "",
+          "description": "8th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop9",
+          "name": "9th Stop",
+          "next_location_id": "10th Stop",
+          "video_url": "",
+          "description": "9th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop10",
+          "name": "10th Stop",
+          "next_location_id": "11th Stop",
+          "video_url": "",
+          "description": "10th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stop11",
+          "name": "11th Stop",
+          "next_location_id": "last Stop",
+          "video_url": "",
+          "description": "11th Stop on the tour",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "firstfloorwindowslab",
+          "name": "First Floor Windows lab",
+          "next_location_id": "deansoffice",
+          "video_url": "",
+          "description": "computer lab on the first floor containing Windows pc with apps used in assignments in Various classes",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "deansoffice",
+          "name": "Dean's Office",
+          "next_location_id": "last Stop",
+          "video_url": "",
+          "description": "Russ college Dean's Office",
+          "tour_id": "testtour1"
+        },
+        {
+          "id": "stoplast",
+          "name": "last Stop",
+          "next_location_id": "",
+          "video_url": "",
+          "description": "Last Stop on the test tour",
+          "tour_id": "testtour1"
         }
       ]
     }

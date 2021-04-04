@@ -77,4 +77,8 @@ dependencies {
     implementation 'org.osmdroid:osmdroid-wms:6.1.8'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.graphhopper:graphhopper-android:0.11.0'
+    implementation 'com.graphhopper:graphhopper-reader-osm:0.11.0'
+    implementation 'io.jenetics:jpx:1.4.0'
+    implementation 'stax:stax-api:1.0.1'
+    implementation 'com.fasterxml:aalto-xml:1.1.1'
 }

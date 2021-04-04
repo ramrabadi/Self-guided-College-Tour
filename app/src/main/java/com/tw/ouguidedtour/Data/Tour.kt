@@ -22,9 +22,9 @@ class Tour: AppCompatActivity() {
     private var stops_visited: Int = 0
 
     // Holds an array of Location Objects
-    private lateinit var tour_stops: MutableList<Location>
+    private var tour_stops: MutableList<Location> = mutableListOf()
 
-    private lateinit var tour_stops_visited: MutableList<Boolean>
+    private var tour_stops_visited: MutableList<Boolean> = mutableListOf()
 
     init {
         id = "None"
@@ -53,7 +53,7 @@ class Tour: AppCompatActivity() {
             for (j in 0 until locationsArray.length()) {
                 val location = locationsArray.getJSONObject(j)
                 if (input == location.getString("id")) {
-                    output = location.getString("id_of_tour")
+                    output = location.getString("tour_id")
                     return output
                 }
             }
@@ -89,23 +89,17 @@ class Tour: AppCompatActivity() {
 
                 for (j in 0 until locationsArray.length()) {
 
+
                     val output: Location = Location()
+
                     val location = locationsArray.getJSONObject(j)
                     output.setId(location.getString("id"))
                     output.setName(location.getString("name"))
                     output.setNextLocationId(location.getString("next_location_id"))
                     output.setVideoUrl(location.getString("video_url"))
                     output.setDescription(location.getString("description"))
-                    output.setIdOfTour((location.getString("id_of_tour")))
-
-                    val picturesArray = location.getJSONArray("pictures")
-                    for (k in 0 until picturesArray.length()) {
-                        val image = picturesArray.getJSONObject(k)
-                        output.setPicture(image.getString("image"))
-                    }
-
                     output.setIdOfTour((location.getString("tour_id")))
-
+       
 //                    output.setPicture((location.getString("picture")))
 //
 //                    val tempNavigationData:NavigationData = NavigationData()
@@ -115,6 +109,8 @@ class Tour: AppCompatActivity() {
 //                    tempNavigationData.setFloor((location.getInt("floor")))
 //                    output.setNavigationData(tempNavigationData)
 
+
+                    output.setNavigationData(tempNavigationData)
                     tour.tour_stops.add(output)
                     tour.tour_stops_visited.add(false)
                 }
@@ -181,7 +177,7 @@ class Tour: AppCompatActivity() {
     }
     // Returns a Location from the tour_stops, returns a blank location with the name "Error" or "Error Already Visited Location"
     fun getLocation(tour: Tour, input: String): Location {
-        lateinit var x: Location
+        var x: Location = Location()
         val list = tour.getTourStops()
         val visited = tour.getTourStopsVisited()
         for (i in 0 until list.size) {
