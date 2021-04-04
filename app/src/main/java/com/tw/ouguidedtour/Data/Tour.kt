@@ -1,7 +1,6 @@
 package com.tw.ouguidedtour.Data
 
 import android.content.res.AssetManager
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
 import org.json.JSONObject
@@ -89,7 +88,8 @@ class Tour: AppCompatActivity() {
                 val locationsArray = temp.getJSONArray("Locations")
 
                 for (j in 0 until locationsArray.length()) {
-                    lateinit var output: Location
+
+                    val output: Location = Location()
                     val location = locationsArray.getJSONObject(j)
                     output.setId(location.getString("id"))
                     output.setName(location.getString("name"))
@@ -103,13 +103,17 @@ class Tour: AppCompatActivity() {
                         val image = picturesArray.getJSONObject(k)
                         output.setPicture(image.getString("image"))
                     }
-                    val tempNavigationData:NavigationData = NavigationData()
 
-                    tempNavigationData.setLat((location.getDouble("lat")))
-                    tempNavigationData.setLong((location.getDouble("long")))
-                    tempNavigationData.setFloor((location.getInt("floor")))
+                    output.setIdOfTour((location.getString("tour_id")))
 
-                    output.setNavigationData(tempNavigationData)
+//                    output.setPicture((location.getString("picture")))
+//
+//                    val tempNavigationData:NavigationData = NavigationData()
+//
+//                    tempNavigationData.setLat((location.getDouble("lat")))
+//                    tempNavigationData.setLong((location.getDouble("long")))
+//                    tempNavigationData.setFloor((location.getInt("floor")))
+//                    output.setNavigationData(tempNavigationData)
 
                     tour.tour_stops.add(output)
                     tour.tour_stops_visited.add(false)
@@ -137,9 +141,6 @@ class Tour: AppCompatActivity() {
     // variable Setters
     fun setId(temp: String) {
         id = temp
-    }
-    fun setName(temp: String) {
-        name = temp
     }
     fun setStops(temp: Int) {
         stops = temp
@@ -203,6 +204,20 @@ class Tour: AppCompatActivity() {
         for ((i, j) in x.withIndex()) {
             if (!y[i]) {
                 output = x[i].getId()
+            }
+        }
+        return output
+    }
+
+    fun haveBeenToLocation(tour: Tour, id: String): Boolean {
+        var output = true
+        val x: MutableList<Location> = tour.getTourStops()
+        val y: MutableList<Boolean> = tour.getTourStopsVisited()
+        for ((i, j) in x.withIndex()) {
+            if (id == j.getId() && y[i])
+            {
+                output = false
+                return output
             }
         }
         return output

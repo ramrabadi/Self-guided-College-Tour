@@ -350,16 +350,33 @@ class MainActivity : AppCompatActivity() {
                 dataIntent.putExtra("id", result.contents)
                 startActivity(dataIntent)
                 qrString = result.contents
+                val tourIntent = Intent(this, TourActivity::class.java)
 
                 if (tour.getId() == "None") {
                     // TODO Change Test.json to config file variable
                     tour.load_list_of_stops(tour, qrString, "Test.json", assets)
-                }
 
-                val tourIntent = Intent(this, TourActivity::class.java)
-                if (qrString == nextLocationId) {
+                    currentLocation = tour.getLocation(tour, qrString)
+                    nextLocation = tour.getLocation(tour, currentLocation.getNextLocationId())
+                    nextLocationId = nextLocation.getId()
+                    tour.setToursStopVisited(tour, qrString)
+                    tourIntent.putExtra("name", currentLocation.getName())
+                    tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                    tourIntent.putExtra("description", currentLocation.getDescription())
+                    //tourIntent.putExtra("picture", currentLocation.getPicture())
+                    startActivity(tourIntent)
+                } else if (qrString == nextLocationId) {
 
                     tour.setToursStopVisited(tour, qrString)
+                    if ((tour.getStops() - tour.getStopsVisited()) == 1) {
+                        currentLocation = nextLocation
+                        Toast.makeText(this, "You are headed to the Last Location!", Toast.LENGTH_LONG).show()
+                        tourIntent.putExtra("name", currentLocation.getName())
+                        tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                        tourIntent.putExtra("description", currentLocation.getDescription())
+                        //tourIntent.putExtra("picture", currentLocation.getPicture())
+                        startActivity(tourIntent)
+                    }
                     currentLocation = nextLocation
 
                     nextLocationId = nextLocation.getNextLocationId()
@@ -368,20 +385,23 @@ class MainActivity : AppCompatActivity() {
                     tourIntent.putExtra("name", currentLocation.getName())
                     tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
                     tourIntent.putExtra("description", currentLocation.getDescription())
+                    //tourIntent.putExtra("picture", currentLocation.getPicture())
                     startActivity(tourIntent)
                 } else {
-                    tour.setToursStopVisited(tour, qrString)
-                    currentLocation = tour.getLocation(tour, qrString)
+                    if (!tour.haveBeenToLocation(tour, qrString) && (tour.getStops() - tour.getStopsVisited()) == 2) {
+                        tour.setToursStopVisited(tour, qrString)
+                        currentLocation = tour.getLocation(tour, qrString)
 
-                    nextLocationId = nextLocation.getNextLocationId()
-                    nextLocation = tour.getLocation(tour, nextLocationId)
+                        nextLocationId = tour.findNextUnvisitedLocation(tour)
+                        nextLocation = tour.getLocation(tour, nextLocationId)
+                        tourIntent.putExtra("name", currentLocation.getName())
+                        tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                        tourIntent.putExtra("description", currentLocation.getDescription())
+                        //tourIntent.putExtra("picture", currentLocation.getPicture())
+                        startActivity(tourIntent)
+                    }
 
-                    tourIntent.putExtra("name", currentLocation.getName())
-                    tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
-                    tourIntent.putExtra("description", currentLocation.getDescription())
-                    startActivity(tourIntent)
                 }
-
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
