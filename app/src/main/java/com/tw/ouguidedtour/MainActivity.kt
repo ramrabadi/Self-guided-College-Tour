@@ -826,10 +826,10 @@ class MainActivity : AppCompatActivity() {
         var startPoint: GeoPoint = GeoPoint(39.3260909, -82.1069895)
         var routePoint: GeoPoint = GeoPoint(39.3260909, -82.1069895)
         val elevator: GeoPoint = GeoPoint(39.3260909, -82.1069895)
-        val door: GeoPoint = GeoPoint(39.3260058,-82.1066644)
+        val door: GeoPoint = GeoPoint(39.3259984,-82.1066439)
 
         if (displayFloor == currentFloor) {
-            if (displayFloor == 1) {
+            if (displayFloor == 1 && mLocationOverlay.isMyLocationEnabled) {
                 startPoint = door
             }
             else {

@@ -27,6 +27,8 @@
   <node id='-136292' action='modify' visible='true' lat='39.32640297739' lon='-82.10695387311' />
   <node id='-136293' action='modify' visible='true' lat='39.32641630269' lon='-82.1069750746' />
   <node id='-136294' action='modify' visible='true' lat='39.32584331242' lon='-82.10694327237' />
+  <node id='-136311' action='modify' visible='true' lat='39.32616285623' lon='-82.10690827179' />
+  <node id='-136312' action='modify' visible='true' lat='39.32627346978' lon='-82.10708369561' />
   <node id='196356180' action='delete' timestamp='2019-09-28T04:42:12Z' uid='703694' user='Clarke22' visible='true' version='3' changeset='75031414' lat='39.326187' lon='-82.1093343' />
   <node id='196356183' action='delete' timestamp='2019-09-28T04:42:12Z' uid='703694' user='Clarke22' visible='true' version='3' changeset='75031414' lat='39.3260448' lon='-82.1091933' />
   <node id='196356184' action='delete' timestamp='2009-10-15T08:40:45Z' uid='147510' user='woodpeck_fixbot' visible='true' version='2' changeset='2851908' lat='39.325865' lon='-82.109045' />
@@ -218,6 +220,7 @@
     <nd ref='-136288' />
     <nd ref='-136283' />
     <nd ref='-136286' />
+    <nd ref='-136311' />
     <nd ref='-136284' />
     <nd ref='-136281' />
     <nd ref='-136273' />
@@ -249,14 +252,9 @@
     <nd ref='-136288' />
     <nd ref='-136283' />
     <nd ref='-136286' />
+    <nd ref='-136311' />
     <nd ref='-136284' />
     <nd ref='-136285' />
-    <tag k='highway' v='primary' />
-    <tag k='name' v='Hallway' />
-  </way>
-  <way id='-102365' action='modify' visible='true'>
-    <nd ref='-136286' />
-    <nd ref='-136287' />
     <tag k='highway' v='primary' />
     <tag k='name' v='Hallway' />
   </way>
@@ -266,6 +264,7 @@
     <nd ref='-136290' />
     <nd ref='-136291' />
     <nd ref='-136287' />
+    <nd ref='-136312' />
     <nd ref='-136292' />
     <nd ref='-136293' />
     <tag k='highway' v='primary' />
@@ -274,7 +273,13 @@
   <way id='-102367' action='modify' visible='true'>
     <nd ref='-136290' />
     <nd ref='-136294' />
-    <tag k='highway' v='pedestrian' />
+    <tag k='highway' v='primary' />
+    <tag k='name' v='Hallway' />
+  </way>
+  <way id='-102388' action='modify' visible='true'>
+    <nd ref='-136311' />
+    <nd ref='-136312' />
+    <tag k='highway' v='primary' />
     <tag k='name' v='Hallway' />
   </way>
   <way id='18968057' action='delete' timestamp='2019-09-29T08:27:37Z' uid='703694' user='Clarke22' visible='true' version='4' changeset='75055855'>
