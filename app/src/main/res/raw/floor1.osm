@@ -21,11 +21,12 @@
   <node id='-132630' action='modify' visible='true' lat='39.32640124504' lon='-82.10695261442' />
   <node id='-132647' action='modify' visible='true' lat='39.32615959056' lon='-82.10691160601' />
   <node id='-132656' action='modify' visible='true' lat='39.32626917941' lon='-82.10708719472' />
-  <node id='-132663' action='modify' visible='true' lat='39.32587729597' lon='-82.10690814851' />
   <node id='-132664' action='modify' visible='true' lat='39.32598838774' lon='-82.10708640261' />
   <node id='-132666' action='modify' visible='true' lat='39.32587020969' lon='-82.10699362179' />
-  <node id='-132667' action='modify' visible='true' lat='39.32590614088' lon='-82.10695443206' />
   <node id='-132668' action='modify' visible='true' lat='39.32590209365' lon='-82.10755962579' />
+  <node id='-132675' action='modify' visible='true' lat='39.32588498937' lon='-82.10690275349' />
+  <node id='-132677' action='modify' visible='true' lat='39.32599515614' lon='-82.10707949214' />
+  <node id='-132678' action='modify' visible='true' lat='39.32591457315' lon='-82.10695021422' />
   <node id='196356180' action='delete' timestamp='2019-09-28T04:42:12Z' uid='703694' user='Clarke22' visible='true' version='3' changeset='75031414' lat='39.326187' lon='-82.1093343' />
   <node id='196356183' action='delete' timestamp='2019-09-28T04:42:12Z' uid='703694' user='Clarke22' visible='true' version='3' changeset='75031414' lat='39.3260448' lon='-82.1091933' />
   <node id='196356184' action='delete' timestamp='2009-10-15T08:40:45Z' uid='147510' user='woodpeck_fixbot' visible='true' version='2' changeset='2851908' lat='39.325865' lon='-82.109045' />
@@ -216,6 +217,7 @@
     <nd ref='-108644' />
     <nd ref='-108659' />
     <nd ref='-132664' />
+    <nd ref='-132677' />
     <nd ref='-108661' />
     <nd ref='-132647' />
     <nd ref='-132487' />
@@ -270,16 +272,16 @@
     <tag k='highway' v='primary' />
     <tag k='name' v='Hallway' />
   </way>
-  <way id='-102268' action='modify' visible='true'>
-    <nd ref='-132663' />
-    <nd ref='-132667' />
-    <nd ref='-132664' />
+  <way id='-102283' action='modify' visible='true'>
+    <nd ref='-132675' />
+    <nd ref='-132678' />
+    <nd ref='-132677' />
     <tag k='highway' v='primary' />
     <tag k='name' v='Hallway' />
   </way>
-  <way id='-102271' action='modify' visible='true'>
+  <way id='-102285' action='modify' visible='true'>
     <nd ref='-132666' />
-    <nd ref='-132667' />
+    <nd ref='-132678' />
     <tag k='highway' v='primary' />
     <tag k='name' v='Hallway' />
   </way>
