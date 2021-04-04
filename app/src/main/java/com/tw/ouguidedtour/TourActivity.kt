@@ -7,6 +7,8 @@ import android.widget.MediaController
 import android.widget.TextView
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_tour.*
 
 
 class TourActivity: AppCompatActivity() {
@@ -35,8 +37,10 @@ class TourActivity: AppCompatActivity() {
         title = intent.getStringExtra("name")
         val videoUrl = intent.getStringExtra("videoUrl")
         val description = intent.getStringExtra("description")
+        //val imageURL = intent.getStringExtra("picture")
         val videoView : VideoView = findViewById(R.id.TourVideoView)
         val mediaController = MediaController(this)
+        //Picasso.get().load(imageURL).into(item_image)
         mediaController.setAnchorView(videoView)
         videoView.setVideoPath(videoUrl)
         videoView.start()
