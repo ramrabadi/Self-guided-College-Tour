@@ -28,7 +28,7 @@ The rest of the information will be related to your account or passwords for the
 
 ## JSON File
 
-The Locations don't have to been in order. The names are case sensitive and need to be exactly as shown.
+The Locations don't have to been in order. The names are case sensitive and need to be exactly as shown.  The JSON file should be in the app/src/main/assets folder.
 
 ![JSON Format](https://i.imgur.com/qQIHAtL.png)
 
