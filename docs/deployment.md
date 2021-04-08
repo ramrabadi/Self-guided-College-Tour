@@ -16,7 +16,7 @@ The rest of the information will be related to your account or passwords for the
 - Add a title and description of the app
 - Add Screen-shots of the application in use
 - Determine Rating of the app (age rating)
-- Select the category the app falls under, in this case mostlikley "navigation"
+- Select the category the app falls under, in this case mostlikley "Navigation"
 - Add Privacy policy rules
 - Upload APK file that you have already built
 
@@ -32,6 +32,9 @@ The Locations don't have to been in order. The names are case sensitive and need
 
 ![JSON Format](https://i.imgur.com/qQIHAtL.png)
 
+
+## Video's URL
+So only videos on YouTube work for this it uses YouTube's API.  WIth a video URL like "https://www.youtube.com/watch?v=fqlPsAAsZss" we only need the "fqlPAAsZss", so everything after the "=".
 
 ## QR codes generation (TBD)
 
