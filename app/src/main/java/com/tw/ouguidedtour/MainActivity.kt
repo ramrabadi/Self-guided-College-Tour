@@ -47,6 +47,7 @@ import com.graphhopper.util.Parameters
 import com.graphhopper.util.PointList
 import com.tw.ouguidedtour.Data.NavigationData
 import com.tw.ouguidedtour.Data.Tour
+import org.osmdroid.api.IMapController
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager
 import org.osmdroid.views.MapController
 import java.io.File
@@ -229,13 +230,9 @@ class MainActivity : AppCompatActivity() {
         val policy: StrictMode.ThreadPolicy =
             StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
-        Configuration.getInstance().isDebugMode = true
-        Configuration.getInstance().isDebugTileProviders = true
+
         //create the map
-        val mainTileProvider = MapTileProviderBasic(applicationContext)
-        mainTileProvider.tileSource = TileSourceFactory.MAPNIK
-        val mainTileOverlay = TilesOverlay(mainTileProvider, this.baseContext)
-        mainTileOverlay.loadingBackgroundColor = (Color.TRANSPARENT)
+
 
         map = findViewById<View>(R.id.map) as MapView
 
@@ -244,16 +241,15 @@ class MainActivity : AppCompatActivity() {
         mapController.setCenter(GeoPoint(39.3261779, -82.106899))
 
         map!!.setUseDataConnection(true)
-        map!!.overlays.add(mainTileOverlay)
+
         map!!.minZoomLevel = 12.0
 
 
-        //map!!.setTileSource(TileSourceFactory.MAPNIK)
+        map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setMultiTouchControls(true)
 
       
-        val destFloor = 3
-        val destLoc = GeoPoint(39.3261779, -82.106899)
+
 
 
         /** Draw image of Storcker on map */
@@ -522,6 +518,14 @@ class MainActivity : AppCompatActivity() {
             val dialog = builder.create()
             dialog.show()
         }
+        if (nextLocation.getId() != "None" ) {
+            val tempNavData = nextLocation.getNavData()
+            updateDestination(
+                tempNavData.getLat(), tempNavData.getLong(), tempNavData.getFloor(), map!!,
+                map!!.controller, mLocationOverlay, currentFloor
+            )
+        }
+
 
         // Resume map updating of ui
         map!!.onResume()
@@ -556,7 +560,7 @@ class MainActivity : AppCompatActivity() {
 
         //the rest of this is arguments so that the map can be updated
         map : MapView,
-        mapController: MapController,
+        mapController: IMapController,
         mLocationOverlay : MyLocationNewOverlay,
         current_floor: Int
         ) {
