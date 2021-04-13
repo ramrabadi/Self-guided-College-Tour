@@ -110,7 +110,7 @@ class Tour: AppCompatActivity() {
 //                    output.setNavigationData(tempNavigationData)
 
 
-                    output.setNavigationData(tempNavigationData)
+
                     tour.tour_stops.add(output)
                     tour.tour_stops_visited.add(false)
                 }

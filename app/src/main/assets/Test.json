@@ -12,7 +12,10 @@
           "next_location_id": "thirdfloorlab",
           "video_url": "",
           "description": "Linux Lab on the first floor used for CS labs and for use by all CS students",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor":1
         },
         {
           "id": "thirdfloorlab",
@@ -20,7 +23,10 @@
           "next_location_id": "",
           "video_url": "",
           "description": "Linux Lab on the third floor used for CS labs and for use by all CS students",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop3",
@@ -28,7 +34,10 @@
           "next_location_id": "4th stop",
           "video_url": "",
           "description": "3rd stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop4",
@@ -36,7 +45,10 @@
           "next_location_id": "5th Stop",
           "video_url": "",
           "description": "4th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop5",
@@ -44,7 +56,10 @@
           "next_location_id": "6th Stop",
           "video_url": "",
           "description": "5th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop6",
@@ -52,7 +67,10 @@
           "next_location_id": "7th Stop",
           "video_url": "",
           "description": "6th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop7",
@@ -60,7 +78,10 @@
           "next_location_id": "8th Stop",
           "video_url": "",
           "description": "7th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop8",
@@ -68,7 +89,10 @@
           "next_location_id": "9th Stop",
           "video_url": "",
           "description": "8th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop9",
@@ -76,7 +100,10 @@
           "next_location_id": "10th Stop",
           "video_url": "",
           "description": "9th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop10",
@@ -84,7 +111,10 @@
           "next_location_id": "11th Stop",
           "video_url": "",
           "description": "10th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stop11",
@@ -92,7 +122,10 @@
           "next_location_id": "last Stop",
           "video_url": "",
           "description": "11th Stop on the tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "firstfloorwindowslab",
@@ -100,7 +133,10 @@
           "next_location_id": "deansoffice",
           "video_url": "",
           "description": "computer lab on the first floor containing Windows pc with apps used in assignments in Various classes",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "deansoffice",
@@ -108,7 +144,10 @@
           "next_location_id": "last Stop",
           "video_url": "",
           "description": "Russ college Dean's Office",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         },
         {
           "id": "stoplast",
@@ -116,7 +155,10 @@
           "next_location_id": "",
           "video_url": "",
           "description": "Last Stop on the test tour",
-          "tour_id": "testtour1"
+          "id_of_tour": "testtour1",
+          "lat": 1,
+          "long": 1,
+          "floor": 1
         }
       ]
     }
