@@ -2,13 +2,12 @@ package com.tw.ouguidedtour
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.MediaController
-import android.widget.TextView
-import android.widget.VideoView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.youtube.player.YouTubeInitializationResult
+import com.google.android.youtube.player.YouTubePlayer
+import com.google.android.youtube.player.YouTubePlayerView
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_tour.*
 
 
 class TourActivity: AppCompatActivity() {
@@ -16,6 +15,7 @@ class TourActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tour)
+
 
         val button = findViewById<Button>(R.id.go_to_next_location)
         button.setOnClickListener {
@@ -29,26 +29,50 @@ class TourActivity: AppCompatActivity() {
 
         displayLocation()
     }
+
     
     private fun displayLocation() {
 
         val intent = intent
 
+        /** Sets title of Location */
         title = intent.getStringExtra("name")
-        val videoUrl = intent.getStringExtra("videoUrl")
-        val description = intent.getStringExtra("description")
-        //val imageURL = intent.getStringExtra("picture")
-        val videoView : VideoView = findViewById(R.id.TourVideoView)
-        val mediaController = MediaController(this)
-        //Picasso.get().load(imageURL).into(item_image)
-        mediaController.setAnchorView(videoView)
-        videoView.setVideoPath(videoUrl)
-        videoView.start()
-        videoView.setMediaController(mediaController)
 
+        /** The end of the Youtube URL */
+        val videoUrl = intent.getStringExtra("videoUrl")
+
+        /** Load image and set into item_image */
+        //val imageURL = intent.getStringExtra("picture")
+        //Picasso.get().load(imageURL).into(item_image)
+
+        /** Set description to DescriptionView */
+        val description = intent.getStringExtra("description")
         val descriptionView = findViewById<TextView>(R.id.DescriptionView)
         descriptionView.text = description
 
+
+        val youTubePlayer = findViewById<YouTubePlayerView>(R.id.ytPlayer)
+
+        youTubePlayer.initialize(R.string.YouTubeAPI.toString(), object : YouTubePlayer.OnInitializedListener{
+            override fun onInitializationSuccess(
+                provider: YouTubePlayer.Provider?,
+                player: YouTubePlayer?,
+                p2: Boolean
+            ) {
+                player?.loadVideo(videoUrl)
+                player?.play()
+            }
+
+            override fun onInitializationFailure(
+                p0: YouTubePlayer.Provider?,
+                p1: YouTubeInitializationResult?
+            ) {
+                Toast.makeText(this@TourActivity , "Video player Failed" , Toast.LENGTH_SHORT).show()
+            }
+        })
+
     }
+
+
 
 }

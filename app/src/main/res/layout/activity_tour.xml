@@ -17,10 +17,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <VideoView
-                android:id="@+id/TourVideoView"
-                android:layout_width="wrap_content"
-                android:layout_height="300dp" />
+            <com.google.android.youtube.player.YouTubePlayerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ytPlayer"
+                app:layout_constraintTop_toTopOf="parent"
+                />
 
             <TextView
                 android:id="@+id/DescriptionView"
