@@ -53,7 +53,7 @@ class TourActivity: AppCompatActivity() {
 
         val youTubePlayer = findViewById<YouTubePlayerView>(R.id.ytPlayer)
 
-        youTubePlayer.initialize(R.string.YouTubeAPI.toString(), object : YouTubePlayer.OnInitializedListener{
+        youTubePlayer.initialize("AIzaSyDmHD10feFC5D_FPP9OLkTzGAVJRWrLb80", object : YouTubePlayer.OnInitializedListener{
             override fun onInitializationSuccess(
                 provider: YouTubePlayer.Provider?,
                 player: YouTubePlayer?,
