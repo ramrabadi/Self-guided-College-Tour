@@ -19,7 +19,4 @@
     <string name="hello_world">Hello Square World!</string>
     <string name="next_location">Next Location</string>
 
-    <string name="YouTubeAPI">AIzaSyDmHD10feFC5D_FPP9OLkTzGAVJRWrLb80</string>
-    <string name="GraphHopperAPI">b48048f0-1ee2-4459-ad43-9e5da2d005eb</string>
-    <string name="JSONFile">Test.json</string>
 </resources>
