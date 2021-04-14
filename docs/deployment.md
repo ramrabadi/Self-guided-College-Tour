@@ -40,3 +40,32 @@ So only videos on YouTube work for this it uses YouTube's API.  WIth a video URL
 
 For this we still are trying to make it so that the owner can generate a qr code for a stop(i.e. a location) and also have it so that if the user doesn't have the app already installed then it will take them to the Play Store.
 
+## YouTube API key
+
+To create a YouTube API key you will need to go to Google Cloud Platform.  You will need to have a google account.  Find the YouTube API Service.
+
+![YouTubeAPI](https://i.imgur.com/c3Gw632.png)
+
+Once in the YouTube API page click on the "MANAGE" button which will allow you to create your own API key.
+
+![Manage YouTube API](https://i.imgur.com/3VbHUnT.png)
+
+At the top of the page click "CREATE CREDENTIALS" button and select "API key". Then you will want to restric accss to the key to only this application.
+
+![Restrict key](https://i.imgur.com/tuA0RBQ.png)
+
+Next open the application in Android Studio and on the right hand side of the application click the gradle button.
+
+![Gradle icon](https://i.imgur.com/HAMfjln.png)
+
+Next you will click the name of the application then"Tasks", then "android", here you will double click the "signingReport".
+
+![SigningReport](https://i.imgur.com/w2b5mYS.png)
+
+The "run" tab will open up and you will see the following.  You will copy the value for the SHA-1 value. 
+
+![Select SHA1](https://i.imgur.com/Tt2FzMJ.png)
+
+The SHA-1 value will be put in the field of "SHA-1 certificate fingerprint".  The Package name will be the name of the package which unless changed is currently "com.tw.ouguidedtour".  When these value are in press "DONE". Below that section select the "Restrict key" button and then only select the "YouTube Data API".
+
+![Restrict API to YoutTube](https://i.imgur.com/st8uO4r.png)
