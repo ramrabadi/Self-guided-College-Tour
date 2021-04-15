@@ -62,6 +62,7 @@ class MainMenuActivity: AppCompatActivity() {
     }
 
 
+    
     //Sends QR data to Database activity
     override fun onActivityResult(
         requestCode: Int,
