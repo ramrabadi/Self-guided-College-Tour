@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Ohio University Guided Tour</string>
     <string name="warning">This application provides the functionality of navigating to and around the Stocker Center. Do not use while driving.</string>
     <string name="title_activity_2">Activity2</string>
@@ -18,4 +18,5 @@
     -->
     <string name="hello_world">Hello Square World!</string>
     <string name="next_location">Next Location</string>
+
 </resources>

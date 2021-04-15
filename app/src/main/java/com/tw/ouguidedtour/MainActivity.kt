@@ -47,6 +47,7 @@ import com.graphhopper.util.Parameters
 import com.graphhopper.util.PointList
 import com.tw.ouguidedtour.Data.NavigationData
 import com.tw.ouguidedtour.Data.Tour
+import org.osmdroid.api.IMapController
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager
 import org.osmdroid.views.MapController
 import java.io.File
@@ -57,13 +58,10 @@ import java.io.InputStream
 class MainActivity : AppCompatActivity() {
 
     private var locationManager: LocationManager? = null
-    private val ACCESS_FINE_LOCATION_RQ = 101
-    private val ACCESS_CAMERA_RQ = 102
     private var mLocationPermissionApproved: Boolean = false
     private var mCameraPermissionApproved: Boolean = false
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
-    val x: Int = 1235
 
     var endpoint: GeoPoint = GeoPoint(39.3262283, -82.1068219)
 
@@ -229,13 +227,9 @@ class MainActivity : AppCompatActivity() {
         val policy: StrictMode.ThreadPolicy =
             StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
-        Configuration.getInstance().isDebugMode = true
-        Configuration.getInstance().isDebugTileProviders = true
+
         //create the map
-        val mainTileProvider = MapTileProviderBasic(applicationContext)
-        mainTileProvider.tileSource = TileSourceFactory.MAPNIK
-        val mainTileOverlay = TilesOverlay(mainTileProvider, this.baseContext)
-        mainTileOverlay.loadingBackgroundColor = (Color.TRANSPARENT)
+
 
         map = findViewById<View>(R.id.map) as MapView
 
@@ -244,16 +238,12 @@ class MainActivity : AppCompatActivity() {
         mapController.setCenter(GeoPoint(39.3261779, -82.106899))
 
         map!!.setUseDataConnection(true)
-        map!!.overlays.add(mainTileOverlay)
+
         map!!.minZoomLevel = 12.0
 
 
-        //map!!.setTileSource(TileSourceFactory.MAPNIK)
+        map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setMultiTouchControls(true)
-
-      
-        val destFloor = 3
-        val destLoc = GeoPoint(39.3261779, -82.106899)
 
 
         /** Draw image of Storcker on map */
@@ -402,17 +392,6 @@ class MainActivity : AppCompatActivity() {
         Configuration.getInstance()
                 .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
 
-        checkForPermissions(
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            "Fine Location",
-            ACCESS_FINE_LOCATION_RQ
-        )
-        checkForPermissions(
-            android.Manifest.permission.CAMERA,
-            "Camera",
-            ACCESS_CAMERA_RQ
-        )
-
     }
 
     // Sets QR code value for use in TourActivity
@@ -431,7 +410,6 @@ class MainActivity : AppCompatActivity() {
                 val tourIntent = Intent(this, TourActivity::class.java)
 
                 if (tour.getId() == "None") {
-                    // TODO Change Test.json to config file variable
                     tour.setId(tour.get_tour_id(qrString,"Test.json", assets))
                     tour.load_list_of_stops(tour, qrString, "Test.json", assets)
 
@@ -511,17 +489,24 @@ class MainActivity : AppCompatActivity() {
         mWifiEnabled = mWifiManager.isWifiEnabled
         Timber.i("mWifiEnabled: $mWifiEnabled")
 
-        //TODO Tell the user why we need this, to load the maps
         if (!mWifiEnabled) {
             val builder = AlertDialog.Builder(this)
             builder.apply {
-                setMessage("You do not have Wifi Enabled right now")
+                setMessage("You do not have Wifi Enabled right now. Please enable wifi so that the app can help you navigate around Stocker.")
                 setTitle("Wifi Required")
                 setPositiveButton("OK") { dialogInterface: DialogInterface, i: Int -> }
             }
             val dialog = builder.create()
             dialog.show()
         }
+        if (nextLocation.getId() != "None" ) {
+            val tempNavData = nextLocation.getNavData()
+            updateDestination(
+                tempNavData.getLat(), tempNavData.getLong(), tempNavData.getFloor(), map!!,
+                map!!.controller, mLocationOverlay, currentFloor
+            )
+        }
+
 
         // Resume map updating of ui
         map!!.onResume()
@@ -556,7 +541,7 @@ class MainActivity : AppCompatActivity() {
 
         //the rest of this is arguments so that the map can be updated
         map : MapView,
-        mapController: MapController,
+        mapController: IMapController,
         mLocationOverlay : MyLocationNewOverlay,
         current_floor: Int
         ) {
@@ -709,115 +694,7 @@ class MainActivity : AppCompatActivity() {
         //updateDestination(tempNavigationData.getLat())
     }
 
-    /** Functions which check for permission and request permissions **/
 
-    /**
-     *  Function: checkForPermissions
-     *
-     *  Purpose: This checks if the given permission has been granted or not, if it has been granted it displays a Toast to the screen
-     *           sawing that the permission has been granted if not then it calls the requestPermissions function from ActivityCompat,
-     *           this is the function that will be called to check and if not already granted calls other functions to request the permissions.
-     *
-     *  Parameters:     permission: String, Exp(android.Manifest.permission.ACCESS_FINE_LOCATION) This is a permission which must be in the Manifest.xml file.
-     *
-     *                  name: String, This is a string value that is a name given to the Permission by the coder and will be used if the permission has not
-     *                                  been given already.
-     *
-     *                  requestCode: Int, This is a integer value that is created by the coder it could be any value only used later to check which permission needs
-     *                                     to be used to request the permission
-     *
-     *  Pre-condition:  Valid input
-     *
-     *  Post-condition: If the permission being checked is granted sends a toast to the screen. If not calls showWhyRequest which displays a prompt for why we are asking
-     *                  for this permission to be granted.
-     *
-     */
-    private fun checkForPermissions(permission: String, name: String, requestCode: Int) {
-        when {
-            ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED -> {
-                Toast.makeText(applicationContext, "$name permission granted", Toast.LENGTH_SHORT).show()
-            }
-            shouldShowRequestPermissionRationale(permission) -> showWhyRequest(
-                permission,
-                name,
-                requestCode
-            )
-
-            else -> ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
-        }
-    }
-
-
-    /**
-     *  Function: showWhyRequest
-     *
-     *  Purpose: Shows a dialog box in the middle of the screen telling the user why we are going to request location permissions
-     *
-     *  Parameters: permission: String, Exp(android.Manifest.permission.ACCESS_FINE_LOCATION) This is a permission which must be in the Manifest.xml file.
-     *
-     *              name: String, This is a string value that is a name given to the Permission by the coder and will be used if the permission has not
-     *                            been given already.
-     *
-     *             requestCode: Int, This is a integer value that is created by the coder it could be any value only used later to check which permission needs
-     *                               to be used to request the permission
-     *
-     *  Pre-condition: Valid input
-     *
-     *  Post-condition: Displays dialog box and then once the user hit the OK button then stack goes back to checkForPermissions and to the else statement
-     *
-     */
-    private fun showWhyRequest(permission: String, name: String, requestCode: Int) {
-        val builder = AlertDialog.Builder(this)
-
-        builder.apply {
-            setMessage("Permission to access your $name is required help navigate you to the Stocker and through Stocker.")
-            setTitle("Permission Required")
-            setPositiveButton("OK") { dialog, which ->
-                ActivityCompat.requestPermissions(
-                    this@MainActivity,
-                    arrayOf(permission),
-                    requestCode
-                )
-            }
-        }
-
-        val dialog = builder.create()
-
-        dialog.show()
-    }
-
-    /**
-     *  Function: override of onRequestPermissionResult
-     *
-     *  Purpose: Shows a dialog box in the middle of the screen telling the user why we are going to request location permissions
-     *
-     *  Parameters: context: this@MainActivity
-     *
-     *              permission: String, Exp(android.Manifest.permission.ACCESS_FINE_LOCATION) This is a permission which must be in the Manifest.xml file
-     *
-     *             grandResults: IntArray,
-     *
-     */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        fun innerCheck(name: String) {
-            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(applicationContext, "$name permission denied", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(applicationContext, "$name permission granted", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        when (requestCode) {
-            ACCESS_FINE_LOCATION_RQ -> innerCheck("Fine Location")
-            ACCESS_CAMERA_RQ -> innerCheck("Camera")
-        }
-    }
-
-    /** ----------------------------------------------------------------------- **/
 
     /**
      * Checks if location is within Stocker

@@ -17,6 +17,7 @@ class GettingStartedActivity : AppCompatActivity() {
         i_understand_button.setOnClickListener {
             val tutorialIntent = Intent(this, MainMenuActivity::class.java)
             startActivity(tutorialIntent)
+            finish()
         }
     }
 }

@@ -5,6 +5,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class FloorOne extends AppCompatActivity {
 
@@ -39,6 +40,12 @@ public class FloorOne extends AppCompatActivity {
 
     public void openThirdFloor() {
         Intent intent = new Intent(this, FloorThree.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, FloorPlan.class);
         startActivity(intent);
     }
 }

@@ -1,17 +1,19 @@
 package com.tw.ouguidedtour;
 
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class FloorPlan extends AppCompatActivity {
 
     private static final String TAG = "FloorPlan";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,7 @@ public class FloorPlan extends AppCompatActivity {
             }
         });
     }
+
     public void openFirstFloor() {
         Intent intent = new Intent(this, FloorOne.class);
         startActivity(intent);
@@ -48,6 +51,12 @@ public class FloorPlan extends AppCompatActivity {
 
     public void openThirdFloor() {
         Intent intent = new Intent(this, FloorThree.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainMenuActivity.class);
         startActivity(intent);
     }
 }

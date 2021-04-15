@@ -32,9 +32,14 @@ public class FloorTwo extends AppCompatActivity {
         startActivity(intent);
     }
 
-
     public void openThirdFloor() {
         Intent intent = new Intent(this, FloorThree.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, FloorPlan.class);
         startActivity(intent);
     }
 }
