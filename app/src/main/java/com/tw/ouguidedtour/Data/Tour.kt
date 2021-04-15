@@ -102,7 +102,7 @@ class Tour: AppCompatActivity() {
        
 //                    output.setPicture((location.getString("picture")))
 //
-//                    val tempNavigationData:NavigationData = NavigationData()
+                    val tempNavigationData:NavigationData = NavigationData()
 //
 //                    tempNavigationData.setLat((location.getDouble("lat")))
 //                    tempNavigationData.setLong((location.getDouble("long")))
