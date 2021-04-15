@@ -14,6 +14,9 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 
 class MainMenuActivity: AppCompatActivity() {
+    
+    private val ACCESS_FINE_LOCATION_RQ = 101
+    private val ACCESS_CAMERA_RQ = 102
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
