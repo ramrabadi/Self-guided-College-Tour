@@ -15,9 +15,15 @@ import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import android.app.AlertDialog.Builder
-
+import com.tw.ouguidedtour.Data.Tour
 
 class MainMenuActivity: AppCompatActivity() {
+
+    private var currentLocation: com.tw.ouguidedtour.Data.Location = com.tw.ouguidedtour.Data.Location()
+    private var nextLocation: com.tw.ouguidedtour.Data.Location = com.tw.ouguidedtour.Data.Location()
+    private var nextLocationId: String = "None"
+    private var tour: Tour = Tour()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
@@ -55,7 +61,9 @@ class MainMenuActivity: AppCompatActivity() {
         }
     }
 
-    //Sends QR data to Database activity
+
+    //original QR scanner code
+    /*
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -74,6 +82,79 @@ class MainMenuActivity: AppCompatActivity() {
             }
         } else {
             Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+     */
+
+    //Sends QR data to Database activity
+    override fun onActivityResult(requestCode: Int, resultCode: Int,
+                                  data: Intent ?
+    ) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
+            } else {
+                val dataIntent = intent
+                dataIntent.putExtra("id", result.contents)
+                startActivity(dataIntent)
+                val qrString = result.contents
+                val tourIntent = Intent(this, TourActivity::class.java)
+
+                if (tour.getId() == "None") {
+                    // TODO Change Test.json to config file variable
+                    tour.setId(tour.get_tour_id(qrString,"Test.json", assets))
+                    tour.load_list_of_stops(tour, qrString, "Test.json", assets)
+
+                    currentLocation = tour.getLocation(tour, qrString)
+                    nextLocation = tour.getLocation(tour, currentLocation.getNextLocationId())
+                    nextLocationId = nextLocation.getId()
+                    tour.setToursStopVisited(tour, qrString)
+                    tourIntent.putExtra("name", currentLocation.getName())
+                    tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                    tourIntent.putExtra("description", currentLocation.getDescription())
+                    //tourIntent.putExtra("picture", currentLocation.getPicture())
+                    startActivity(tourIntent)
+                } else if (qrString == nextLocationId) {
+
+                    tour.setToursStopVisited(tour, qrString)
+                    if ((tour.getStops() - tour.getStopsVisited()) == 1) {
+                        currentLocation = nextLocation
+                        Toast.makeText(this, "You are headed to the Last Location!", Toast.LENGTH_LONG).show()
+                        tourIntent.putExtra("name", currentLocation.getName())
+                        tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                        tourIntent.putExtra("description", currentLocation.getDescription())
+                        //tourIntent.putExtra("picture", currentLocation.getPicture())
+                        startActivity(tourIntent)
+                    }
+                    currentLocation = nextLocation
+
+                    nextLocationId = nextLocation.getNextLocationId()
+                    nextLocation = tour.getLocation(tour, nextLocationId)
+
+                    tourIntent.putExtra("name", currentLocation.getName())
+                    tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                    tourIntent.putExtra("description", currentLocation.getDescription())
+                    //tourIntent.putExtra("picture", currentLocation.getPicture())
+                    startActivity(tourIntent)
+                } else {
+                    if (!tour.haveBeenToLocation(tour, qrString) && (tour.getStops() - tour.getStopsVisited()) == 2) {
+                        tour.setToursStopVisited(tour, qrString)
+                        currentLocation = tour.getLocation(tour, qrString)
+
+                        nextLocationId = tour.findNextUnvisitedLocation(tour)
+                        nextLocation = tour.getLocation(tour, nextLocationId)
+                        tourIntent.putExtra("name", currentLocation.getName())
+                        tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                        tourIntent.putExtra("description", currentLocation.getDescription())
+                        //tourIntent.putExtra("picture", currentLocation.getPicture())
+                        startActivity(tourIntent)
+                    }
+
+                }
+            }
+        } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
