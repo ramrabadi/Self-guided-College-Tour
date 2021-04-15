@@ -1,7 +1,5 @@
 package com.tw.ouguidedtour
 
-import android.Manifest
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -14,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
-import android.app.AlertDialog.Builder
 
 
 class MainMenuActivity: AppCompatActivity() {
@@ -65,7 +62,11 @@ class MainMenuActivity: AppCompatActivity() {
             intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
             intentIntegrator.initiateScan()
         }
+    }
 
+    override fun onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
     }
 
     //Sends QR data to Database activity
