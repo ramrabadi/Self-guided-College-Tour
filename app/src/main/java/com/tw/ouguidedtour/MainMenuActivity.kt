@@ -15,14 +15,8 @@ import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 import android.app.AlertDialog.Builder
-import com.tw.ouguidedtour.Data.Tour
 
 class MainMenuActivity: AppCompatActivity() {
-
-    private var currentLocation: com.tw.ouguidedtour.Data.Location = com.tw.ouguidedtour.Data.Location()
-    private var nextLocation: com.tw.ouguidedtour.Data.Location = com.tw.ouguidedtour.Data.Location()
-    private var nextLocationId: String = "None"
-    private var tour: Tour = Tour()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
