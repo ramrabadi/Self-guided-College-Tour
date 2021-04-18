@@ -4,13 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerView
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_tour.*
 
 
-class TourActivity: AppCompatActivity() {
+class TourActivity: YouTubeBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +24,46 @@ class TourActivity: AppCompatActivity() {
             val mainIntent = Intent(this, MainActivity::class.java)
             startActivity(mainIntent)
         }
+
+
+        val intent = intent
+
+        /** Sets title of Location */
+        title = intent.getStringExtra("name")
+
+        /** The end of the Youtube URL */
+        val videoUrl = intent.getStringExtra("videoUrl")
+
+        /** Load image and set into item_image */
+        val imageURL = intent.getStringExtra("picture")
+        Picasso.get().load(imageURL).into(item_image)
+
+        /** Set description to DescriptionView */
+        val description = intent.getStringExtra("description")
+        val descriptionView = findViewById<TextView>(R.id.DescriptionView)
+        descriptionView.text = description
+
+
+        val youTubePlayer = findViewById<YouTubePlayerView>(R.id.ytPlayer)
+
+        youTubePlayer.initialize("AIzaSyBt13Db2zMPs4tbO1hO0XDr94jNndc-dmI", object : YouTubePlayer.OnInitializedListener{
+            override fun onInitializationSuccess(
+                provider: YouTubePlayer.Provider?,
+                player: YouTubePlayer?,
+                p2: Boolean
+            ) {
+                player?.loadVideo(videoUrl.toString())
+                player?.play()
+            }
+
+            override fun onInitializationFailure(
+                p0: YouTubePlayer.Provider?,
+                p1: YouTubeInitializationResult?
+            ) {
+                Toast.makeText(this@TourActivity , "Video player Failed" , Toast.LENGTH_SHORT).show()
+            }
+        })
+        //displayLocation()
     }
 
     override fun onResume() {
@@ -42,8 +84,8 @@ class TourActivity: AppCompatActivity() {
         val videoUrl = intent.getStringExtra("videoUrl")
 
         /** Load image and set into item_image */
-        //val imageURL = intent.getStringExtra("picture")
-        //Picasso.get().load(imageURL).into(item_image)
+        val imageURL = intent.getStringExtra("picture")
+        Picasso.get().load(imageURL).into(item_image)
 
         /** Set description to DescriptionView */
         val description = intent.getStringExtra("description")
@@ -53,7 +95,7 @@ class TourActivity: AppCompatActivity() {
 
         val youTubePlayer = findViewById<YouTubePlayerView>(R.id.ytPlayer)
 
-        youTubePlayer.initialize("AIzaSyDmHD10feFC5D_FPP9OLkTzGAVJRWrLb80", object : YouTubePlayer.OnInitializedListener{
+        youTubePlayer.initialize("AIzaSyBt13Db2zMPs4tbO1hO0XDr94jNndc-dmI", object : YouTubePlayer.OnInitializedListener{
             override fun onInitializationSuccess(
                 provider: YouTubePlayer.Provider?,
                 player: YouTubePlayer?,
