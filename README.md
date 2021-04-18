@@ -2,4 +2,4 @@
 
 [Instalation Guide](docs/installation.md)
 
-[Deployment Guid](docs/deployment.md)
+[Deployment Guide](docs/deployment.md)
