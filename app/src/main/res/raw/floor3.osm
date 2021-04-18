@@ -2,19 +2,17 @@
 <osm version='0.6' generator='JOSM'>
   <bounds minlat='39.3256666' minlon='-82.1076429' maxlat='39.3266086' maxlon='-82.1064144' origin='CGImap 0.8.3 (3988266 spike-08.openstreetmap.org)' />
   <node id='-136318' action='modify' visible='true' lat='39.32576290737' lon='-82.10731661546' />
-  <node id='-136319' action='modify' visible='true' lat='39.32629565642' lon='-82.10677268364' />
-  <node id='-136320' action='modify' visible='true' lat='39.32627965801' lon='-82.10674166091' />
-  <node id='-136321' action='modify' visible='true' lat='39.32640924503' lon='-82.10661136546' />
-  <node id='-136322' action='modify' visible='true' lat='39.32643644227' lon='-82.10665686546' />
-  <node id='-136323' action='modify' visible='true' lat='39.32646683918' lon='-82.10662791091' />
-  <node id='-136324' action='modify' visible='true' lat='39.3261996659' lon='-82.10659895637' />
-  <node id='-136325' action='modify' visible='true' lat='39.32623361931' lon='-82.10665952866' />
-  <node id='-136326' action='modify' visible='true' lat='39.32616446934' lon='-82.10672925182' />
-  <node id='-136327' action='modify' visible='true' lat='39.32622776781' lon='-82.1068419975' />
-  <node id='-136328' action='modify' visible='true' lat='39.32640444551' lon='-82.10695468364' />
-  <node id='-136329' action='modify' visible='true' lat='39.32605248018' lon='-82.10730213818' />
-  <node id='-136330' action='modify' visible='true' lat='39.32594883949' lon='-82.10712678096' />
-  <node id='-136331' action='modify' visible='true' lat='39.32592129265' lon='-82.10707670637' />
+  <node id='-136319' action='modify' visible='true' lat='39.32633221313' lon='-82.10672816484' />
+  <node id='-136320' action='modify' visible='true' lat='39.32632416184' lon='-82.10671289492' />
+  <node id='-136321' action='modify' visible='true' lat='39.32646858336' lon='-82.10656616176' />
+  <node id='-136324' action='modify' visible='true' lat='39.32622986497' lon='-82.10656197152' />
+  <node id='-136325' action='modify' visible='true' lat='39.32626964625' lon='-82.10662596833' />
+  <node id='-136326' action='modify' visible='true' lat='39.32621109248' lon='-82.10668678773' />
+  <node id='-136327' action='modify' visible='true' lat='39.32627333129' lon='-82.10678857494' />
+  <node id='-136328' action='modify' visible='true' lat='39.32645689636' lon='-82.10694304026' />
+  <node id='-136329' action='modify' visible='true' lat='39.32604718209' lon='-82.10734734188' />
+  <node id='-136330' action='modify' visible='true' lat='39.32592552784' lon='-82.10714869791' />
+  <node id='-136331' action='modify' visible='true' lat='39.32589056364' lon='-82.10709177427' />
   <node id='-136332' action='modify' visible='true' lat='39.32608939262' lon='-82.10698327755'>
     <tag k='name' v='Elevator' />
   </node>
@@ -220,13 +218,10 @@
     <nd ref='-136319' />
     <nd ref='-136320' />
     <nd ref='-136321' />
-    <nd ref='-136322' />
-    <nd ref='-136323' />
     <tag k='highway' v='primary' />
     <tag k='name' v='Hallway' />
   </way>
   <way id='-102399' action='modify' visible='true'>
-    <nd ref='-136322' />
     <nd ref='-136321' />
     <nd ref='-136320' />
     <nd ref='-136325' />

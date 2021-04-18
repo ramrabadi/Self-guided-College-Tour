@@ -63,12 +63,12 @@ class MainActivity : AppCompatActivity() {
     private var mWifiEnabled: Boolean = false
     private var map: MapView? = null
 
-    var endpoint: GeoPoint = GeoPoint(39.3262283, -82.1068219)
-
+    var endpoint: GeoPoint = GeoPoint(39.3262347, -82.1068644)
     var currentFloor = 1
-    var endFloor = 3
+    var endFloor = 1
     var displayFloor = 1
     val gpsRoadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
+    var isLocationUpdating = true;
     var hopper1 = GraphHopperOSM()
     var hopper2 = GraphHopperOSM()//graph data and routing for each floor
     var hopper3 = GraphHopperOSM()
@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
     var indoorOverlay: Polyline = Polyline()
     lateinit var destMarker: Marker
     lateinit var mLocationOverlay : MyLocationNewOverlay
+    lateinit var locationMarker: Marker
 
     /** Location Listener Config */
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
@@ -163,9 +164,13 @@ class MainActivity : AppCompatActivity() {
 
 
                     map!!.overlays.remove(mLocationOverlay)
+                    map!!.overlays.remove(locationMarker)
 
                     if (currentFloor == displayFloor) {
                         map!!.overlays.add(mLocationOverlay)
+                        if (!mLocationOverlay.isMyLocationEnabled) {
+                            map!!.overlays.add(locationMarker)
+                        }
                     }
 
                     map!!.invalidate()
@@ -246,15 +251,15 @@ class MainActivity : AppCompatActivity() {
         map!!.setMultiTouchControls(true)
 
 
-        /** Draw image of Storcker on map */
-        myGroundOverlay.position = GeoPoint(39.3261511, -82.1069252)
+        /** Draw image of Stocker on map */
+        myGroundOverlay.position = GeoPoint(39.3261561, -82.1069852)
         val d: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
         if (d != null) {
             myGroundOverlay.image = d.mutate()
         }
         myGroundOverlay.setDimensions(130.0f)
         myGroundOverlay.transparency = 0.25f
-        myGroundOverlay.bearing = -54.5F
+        myGroundOverlay.bearing = -54.45F
         map!!.overlays.add(myGroundOverlay)
 
         destMarker =
@@ -276,6 +281,9 @@ class MainActivity : AppCompatActivity() {
         mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), map!!)
         mLocationOverlay.enableMyLocation()
         mLocationOverlay.enableFollowLocation()
+
+        locationMarker = Marker(map)
+
 
 
         // create graphhopper instances
@@ -364,7 +372,7 @@ class MainActivity : AppCompatActivity() {
 
 
         @Suppress("SpellCheckingInspection") val waypoints = ArrayList<GeoPoint>()
-
+        /*
         mLocationOverlay.runOnFirstFix {
             updateIndoor()
             runOnUiThread {
@@ -373,7 +381,7 @@ class MainActivity : AppCompatActivity() {
                 mapController.setZoom(18.0)
                 val currentloc = mLocationOverlay.myLocation
                 waypoints.add(currentloc)
-                waypoints.add(endpoint)
+                waypoints.add(GeoPoint(39.3259984,-82.1066439))//location of door
                 val road: Road = gpsRoadManager.getRoad(waypoints)
                 roadOverlay= RoadManager.buildRoadOverlay(road)
                 map!!.overlays.add(roadOverlay)
@@ -382,7 +390,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+         */
+
         map!!.overlays.add(mLocationOverlay)
+
 
         startLocationUpdates()
         map!!.invalidate()//refresh the map to apply changes
@@ -412,18 +423,20 @@ class MainActivity : AppCompatActivity() {
                 if (tour.getId() == "None") {
                     tour.setId(tour.get_tour_id(qrString,"Test.json", assets))
                     tour.load_list_of_stops(tour, qrString, "Test.json", assets)
-
                     currentLocation = tour.getLocation(tour, qrString)
-                    nextLocation = tour.getLocation(tour, currentLocation.getNextLocationId())
+                    nextLocation = tour.getLocation(tour, currentLocation.getNextLocationId().toString())
                     nextLocationId = nextLocation.getId()
+                    val navdat = nextLocation.getNavData()
+                    endFloor = navdat.getFloor()
+                    endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
                     tour.setToursStopVisited(tour, qrString)
                     tourIntent.putExtra("name", currentLocation.getName())
                     tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
                     tourIntent.putExtra("description", currentLocation.getDescription())
-                    //tourIntent.putExtra("picture", currentLocation.getPicture())
+                    tourIntent.putExtra("picture", currentLocation.getPicture())
                     startActivity(tourIntent)
                 } else if (qrString == nextLocationId) {
-
+                    //Toast.makeText(this, "nextLocation", Toast.LENGTH_SHORT).show()
                     tour.setToursStopVisited(tour, qrString)
                     if ((tour.getStops() - tour.getStopsVisited()) == 1) {
                         currentLocation = nextLocation
@@ -431,18 +444,21 @@ class MainActivity : AppCompatActivity() {
                         tourIntent.putExtra("name", currentLocation.getName())
                         tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
                         tourIntent.putExtra("description", currentLocation.getDescription())
-                        //tourIntent.putExtra("picture", currentLocation.getPicture())
+                        tourIntent.putExtra("picture", currentLocation.getPicture())
                         startActivity(tourIntent)
                     }
                     currentLocation = nextLocation
 
                     nextLocationId = nextLocation.getNextLocationId()
                     nextLocation = tour.getLocation(tour, nextLocationId)
+                    val navdat = nextLocation.getNavData()
+                    endFloor = navdat.getFloor()
+                    endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
 
                     tourIntent.putExtra("name", currentLocation.getName())
                     tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
                     tourIntent.putExtra("description", currentLocation.getDescription())
-                    //tourIntent.putExtra("picture", currentLocation.getPicture())
+                    tourIntent.putExtra("picture", currentLocation.getPicture())
                     startActivity(tourIntent)
                 } else {
                     if (!tour.haveBeenToLocation(tour, qrString) && (tour.getStops() - tour.getStopsVisited()) == 2) {
@@ -450,11 +466,17 @@ class MainActivity : AppCompatActivity() {
                         currentLocation = tour.getLocation(tour, qrString)
 
                         nextLocationId = tour.findNextUnvisitedLocation(tour)
+                        val navdat = nextLocation.getNavData()
+                        endFloor = navdat.getFloor()
+                        endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
+
+                        //Toast.makeText(this, "findNextUnvisited", Toast.LENGTH_SHORT).show()
+
                         nextLocation = tour.getLocation(tour, nextLocationId)
                         tourIntent.putExtra("name", currentLocation.getName())
                         tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
                         tourIntent.putExtra("description", currentLocation.getDescription())
-                        //tourIntent.putExtra("picture", currentLocation.getPicture())
+                        tourIntent.putExtra("picture", currentLocation.getPicture())
                         startActivity(tourIntent)
                     }
 
@@ -499,6 +521,8 @@ class MainActivity : AppCompatActivity() {
             val dialog = builder.create()
             dialog.show()
         }
+        /*moved updating of loc variables to qr return in attempting to debug update location
+        Toast.makeText(this, nextLocation.getId(), Toast.LENGTH_SHORT).show()
         if (nextLocation.getId() != "None" ) {
             val tempNavData = nextLocation.getNavData()
             updateDestination(
@@ -506,6 +530,8 @@ class MainActivity : AppCompatActivity() {
                 map!!.controller, mLocationOverlay, currentFloor
             )
         }
+
+         */
 
 
         // Resume map updating of ui
@@ -553,7 +579,8 @@ class MainActivity : AppCompatActivity() {
         map.overlays.remove(roadOverlay)
         map.invalidate()
 
-
+        currentFloor = endFloor
+        locationMarker.position = endpoint
 
         endpoint = GeoPoint(lat,lon)
         endFloor = floor
@@ -572,16 +599,16 @@ class MainActivity : AppCompatActivity() {
         destMarker.title = "Destination"
         map.overlays.add(destMarker)
         map.invalidate()
+        updateIndoor()
 
-
-        if (mLocationOverlay.isMyLocationEnabled) {
+        if (isLocationUpdating) {
 
             runOnUiThread {
                 mapController.animateTo(mLocationOverlay.myLocation)
                 mapController.setZoom(18.0)
                 val currentloc = mLocationOverlay.myLocation
                 waypoints.add(currentloc)
-                waypoints.add(endpoint)
+                waypoints.add(GeoPoint(39.3259984,-82.1066439))//door
                 val road: Road = gpsRoadManager.getRoad(waypoints)
                 roadOverlay = RoadManager.buildRoadOverlay(road)
                 map.overlays.add(roadOverlay)
@@ -606,24 +633,25 @@ class MainActivity : AppCompatActivity() {
 
             // Need to keep can return null.
             @Suppress("SENSELESS_COMPARISON")
-            if (mLastLocation != null) {
+            if ( mLastLocation != null) {
 
                 //check for switch to/from indoor navigation
                 if (mLocationOverlay.myLocation != null) {
                     gpsEnableCheck()
+                    updateIndoor()
 
                     //update and replace route overlay
                     //note overlay location is used and not actual location
-                    //if followlocation is disabled, i.e. user is indoors this is still required to update the route
+                    // is disabled, i.e. user is indoors this is still required to update the route
                     map!!.overlays.remove(roadOverlay)
                     map!!.invalidate()
 
-                    if (mLocationOverlay.isMyLocationEnabled) {//only redraw roadOverlay if gps routing is enabled
+                    if (isLocationUpdating) {//only redraw roadOverlay if gps routing is enabled
                         runOnUiThread {
 
                             val waypoints = ArrayList<GeoPoint>()
                             waypoints.add(mLocationOverlay.myLocation)
-                            waypoints.add(endpoint)
+                            waypoints.add(GeoPoint(39.3259984,-82.1066439))//door
                             roadOverlay =
                                 RoadManager.buildRoadOverlay(gpsRoadManager.getRoad(waypoints))
 
@@ -706,12 +734,25 @@ class MainActivity : AppCompatActivity() {
         val enableLoc = GeoPoint(39.3261291,-82.1069648)//coordinates for center of stocker
 
 
-        if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 30.0 ) {
-            mLocationOverlay.disableMyLocation()
+        if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 100.0 ) {
+            if (isLocationUpdating == true) {
+                locationMarker.position = mLocationOverlay.myLocation
+                map!!.overlays.remove(mLocationOverlay)
+                map!!.overlays.add(locationMarker)
+                map!!.invalidate()
+                isLocationUpdating = false
+            }
+
         }
         else {
-            mLocationOverlay.enableMyLocation()
+            if (isLocationUpdating == false) {
+                map!!.overlays.remove(locationMarker)
+                map!!.overlays.add(mLocationOverlay)
+                map!!.invalidate()
+                isLocationUpdating = true
+            }
         }
+        updateIndoor()
 
 
     }
@@ -726,11 +767,16 @@ class MainActivity : AppCompatActivity() {
         val door: GeoPoint = GeoPoint(39.3259984,-82.1066439)
 
         if (displayFloor == currentFloor) {
-            if (displayFloor == 1 && mLocationOverlay.isMyLocationEnabled) {
-                startPoint = door
+            if (displayFloor == 1 ) {
+                if (isLocationUpdating) {
+                    startPoint = door
+                }
+                else {
+                    startPoint = locationMarker.position
+                }
             }
             else {
-                startPoint = mLocationOverlay.myLocation
+                startPoint = locationMarker.position
             }
 
             if (currentFloor == endFloor) {

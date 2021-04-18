@@ -53,7 +53,7 @@ class Tour: AppCompatActivity() {
             for (j in 0 until locationsArray.length()) {
                 val location = locationsArray.getJSONObject(j)
                 if (input == location.getString("id")) {
-                    output = location.getString("tour_id")
+                    output = location.getString("id_of_tour")
                     return output
                 }
             }
@@ -98,10 +98,17 @@ class Tour: AppCompatActivity() {
                     output.setNextLocationId(location.getString("next_location_id"))
                     output.setVideoUrl(location.getString("video_url"))
                     output.setDescription(location.getString("description"))
-                    output.setIdOfTour((location.getString("tour_id")))
+                    output.setIdOfTour((location.getString("id_of_tour")))
        
-//                    output.setPicture((location.getString("picture")))
-//
+                    output.setPicture((location.getString("picture")))
+
+                    val tempNavigationData:NavigationData = NavigationData()
+
+                    tempNavigationData.setLat((location.getDouble("lat")))
+                    tempNavigationData.setLong((location.getDouble("long")))
+                    tempNavigationData.setFloor((location.getInt("floor")))
+                    output.setNavigationData(tempNavigationData)
+
                     val tempNavigationData:NavigationData = NavigationData()
 
                    tempNavigationData.setLat((location.getDouble("lat")))
