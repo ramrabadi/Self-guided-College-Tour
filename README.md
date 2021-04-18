@@ -1,3 +1,5 @@
 # OU Guided Tour
 
-[Instalation / Run Guide](docs/installation.md)
+[Instalation Guide](docs/installation.md)
+
+[Deployment Guid](docs/deployment.md)
