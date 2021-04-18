@@ -36,13 +36,16 @@ The Locations don't have to been in order. The names are case sensitive and need
 ## Video's URL
 So only videos on YouTube work for this it uses YouTube's API.  WIth a video URL like "https://www.youtube.com/watch?v=fqlPsAAsZss" we only need the "fqlPAAsZss", so everything after the "=".
 
-## QR codes generation (TBD)
+## Image URL
+Just need the url of the image, with the "http/https://".
 
-For this we still are trying to make it so that the owner can generate a qr code for a stop(i.e. a location) and also have it so that if the user doesn't have the app already installed then it will take them to the Play Store.
+## QR codes generation
+
+For this just use any QR code generator and store the value of the 'id' of the 'Location'.
 
 ## YouTube API key
 
-To create a YouTube API key you will need to go to Google Cloud Platform.  You will need to have a google account.  Find the YouTube API Service.
+To create a YouTube API key you will need to go to [Google Cloud Platform](https://console.cloud.google.com/apis/library/).  You will need to have a google account.  Find the YouTube API Service.
 
 ![YouTubeAPI](https://i.imgur.com/c3Gw632.png)
 
@@ -69,3 +72,7 @@ The "run" tab will open up and you will see the following.  You will copy the va
 The SHA-1 value will be put in the field of "SHA-1 certificate fingerprint".  The Package name will be the name of the package which unless changed is currently "com.tw.ouguidedtour".  When these value are in press "DONE". Below that section select the "Restrict key" button and then only select the "YouTube Data API".
 
 ![Restrict API to YoutTube](https://i.imgur.com/st8uO4r.png)
+
+## Graph Hopper API 
+
+To create the api key for GraphHopper Directions API go to [GraphHopper](https://www.graphhopper.com).  This is much more straight forword than the YouTube API key.

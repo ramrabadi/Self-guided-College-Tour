@@ -13,9 +13,8 @@ import androidx.core.content.ContextCompat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
 
-
 class MainMenuActivity: AppCompatActivity() {
-
+    
     private val ACCESS_FINE_LOCATION_RQ = 101
     private val ACCESS_CAMERA_RQ = 102
 
@@ -69,6 +68,8 @@ class MainMenuActivity: AppCompatActivity() {
         finishAffinity();
     }
 
+
+    
     //Sends QR data to Database activity
     override fun onActivityResult(
         requestCode: Int,
@@ -82,15 +83,19 @@ class MainMenuActivity: AppCompatActivity() {
                 Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             } else {
                 val s: String = result.contents;
-                val dataIntent = Intent(this, DataActivity::class.java)
-                dataIntent.putExtra("QRData", s)
-                startActivity(dataIntent)
+                val dataIntent = Intent(this, MainActivity::class.java)
+                dataIntent.putExtra("id", s)
+                startActivityForResult(dataIntent, requestCode)
             }
         } else {
             Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
+     
+
+
+
 
     /** Functions which check for permission and request permissions **/
 

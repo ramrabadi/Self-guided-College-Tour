@@ -109,6 +109,13 @@ class Tour: AppCompatActivity() {
                     tempNavigationData.setFloor((location.getInt("floor")))
                     output.setNavigationData(tempNavigationData)
 
+                    val tempNavigationData:NavigationData = NavigationData()
+
+                   tempNavigationData.setLat((location.getDouble("lat")))
+                   tempNavigationData.setLong((location.getDouble("long")))
+                   tempNavigationData.setFloor((location.getInt("floor")))
+                   output.setNavigationData(tempNavigationData)
+
 
 
                     tour.tour_stops.add(output)
