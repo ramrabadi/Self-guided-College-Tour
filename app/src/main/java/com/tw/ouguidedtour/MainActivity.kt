@@ -64,10 +64,11 @@ class MainActivity : AppCompatActivity() {
     private var map: MapView? = null
 
     var endpoint: GeoPoint = GeoPoint(39.3262347, -82.1068644)
+    var current_loc: GeoPoint = GeoPoint(39.3262347, -82.1068644)
     var currentFloor = 1
     var endFloor = 1
     var displayFloor = 1
-    val gpsRoadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
+    val gpsRoadManager: RoadManager = GraphHopperRoadManager("", false)//"b48048f0-1ee2-4459-ad43-9e5da2d005eb"
     var isLocationUpdating = true;
     var hopper1 = GraphHopperOSM()
     var hopper2 = GraphHopperOSM()//graph data and routing for each floor
@@ -127,8 +128,8 @@ class MainActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.MapMenu -> {startActivity(Intent(applicationContext, MainActivity::class.java))
-                    overridePendingTransition(0, 0)
+                R.id.MapMenu -> {//startActivity(Intent(applicationContext, MainActivity::class.java))
+                    //overridePendingTransition(0, 0)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.ScanQR -> {
@@ -162,10 +163,13 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         destMarker.position = endpoint
                     }
+                    /*
                     destMarker.setAnchor(
                         Marker.ANCHOR_CENTER,
                         Marker.ANCHOR_BOTTOM
                     )
+
+                     */
                     destMarker.title = "Destination"
                     if (displayFloor == currentFloor || displayFloor == endFloor) {
                         map!!.overlays.add(destMarker)
@@ -174,13 +178,20 @@ class MainActivity : AppCompatActivity() {
 
 
                     map!!.overlays.remove(mLocationOverlay)
-                    map!!.overlays.remove(locationMarker)
+                    //map!!.overlays.remove(locationMarker)
 
                     if (currentFloor == displayFloor) {
-                        map!!.overlays.add(mLocationOverlay)
-                        if (!mLocationOverlay.isMyLocationEnabled) {
+
+                        if (isLocationUpdating && displayFloor == 1) {
+                            map!!.overlays.add(mLocationOverlay)
+
+                        }
+                        /*
+                        else {
                             map!!.overlays.add(locationMarker)
                         }
+
+                         */
                     }
 
                     map!!.invalidate()
@@ -188,12 +199,16 @@ class MainActivity : AppCompatActivity() {
 
                     if (displayFloor == 1) {
                         startLocationUpdates()
-                        map!!.overlays.add(roadOverlay)//gps route added only for ground floor view
+                        if (isLocationUpdating) {
+                            map!!.overlays.add(roadOverlay)//gps route added only for ground floor view
+                        }
                         val d: Drawable? =
                             ResourcesCompat.getDrawable(resources, R.drawable.first_floor, null)
                         if (d != null) {
                             myGroundOverlay.image = d.mutate()
+
                         }
+                        myGroundOverlay.position = GeoPoint(39.3261561, -82.1069852)
                     }
                     else if (displayFloor == 2) {
                         map!!.overlays.remove(roadOverlay)
@@ -203,6 +218,7 @@ class MainActivity : AppCompatActivity() {
                         if (d != null) {
                             myGroundOverlay.image = d.mutate()
                         }
+                        myGroundOverlay.position = GeoPoint(39.3262101, -82.1068962)//second and third floor have a slightly different origin because the first floor has additional areas
                     }
                     else if (displayFloor == 3) {
                         val d: Drawable? =
@@ -215,18 +231,25 @@ class MainActivity : AppCompatActivity() {
                     updateIndoor()
 
                     map!!.invalidate()
-                    if (displayFloor == 1) {
+                    if (displayFloor == 1 && isLocationUpdating) {
                         map!!.controller.animateTo(mLocationOverlay.myLocation)
                     }
                     else {
                         map!!.controller.animateTo(GeoPoint(39.3261779, -82.106899))
                     }
-
+                    Toast.makeText(this, "Floor: " + displayFloor.toString(), Toast.LENGTH_SHORT).show()
+                    return@OnNavigationItemSelectedListener true
                 }
                 R.id.VideoViewMenu -> {
                     if (currentLocation.getId() != "None") {
-                        val mainIntent = Intent(this, TourActivity::class.java)
-                        startActivity(mainIntent)
+
+
+                        val tourIntent = Intent(this, TourActivity::class.java)
+                        tourIntent.putExtra("name", currentLocation.getName())
+                        tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
+                        tourIntent.putExtra("description", currentLocation.getDescription())
+                        tourIntent.putExtra("picture", currentLocation.getPicture())
+                        startActivity(tourIntent)
                     } else {
                         Toast.makeText(this, "Try visiting a location first.", Toast.LENGTH_SHORT).show()
                     }
@@ -275,7 +298,7 @@ class MainActivity : AppCompatActivity() {
         }
         myGroundOverlay.setDimensions(130.0f)
         myGroundOverlay.transparency = 0.25f
-        myGroundOverlay.bearing = -54.45F
+        myGroundOverlay.bearing = -53.5F
         map!!.overlays.add(myGroundOverlay)
 
         destMarker =
@@ -284,7 +307,7 @@ class MainActivity : AppCompatActivity() {
             destMarker.position = endpoint
         }
         else {
-            destMarker.position = GeoPoint(39.3260909, -82.1069895)
+            destMarker.position = GeoPoint(39.3260704, -82.1070069)
         }
         destMarker.setAnchor(
             Marker.ANCHOR_CENTER,
@@ -298,7 +321,7 @@ class MainActivity : AppCompatActivity() {
         mLocationOverlay.enableMyLocation()
         mLocationOverlay.enableFollowLocation()
 
-        locationMarker = Marker(map)
+        //locationMarker = Marker(map)
 
 
 
@@ -477,7 +500,7 @@ class MainActivity : AppCompatActivity() {
 
                     nextLocationId = nextLocation.getNextLocationId()
                     nextLocation = tour.getLocation(tour, nextLocationId)
-                    Toast.makeText(this, nextLocation.getId(), Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, nextLocation.getId(), Toast.LENGTH_SHORT).show()
                     /*
                     if (nextLocation.getId() != "None" ) {
                         val tempNavData = nextLocation.getNavData()
@@ -565,9 +588,10 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        Toast.makeText(this, nextLocation.getId(), Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, nextLocation.getId(), Toast.LENGTH_SHORT).show()
         if (nextLocation.getId() != "None" ) {
             val tempNavData = nextLocation.getNavData()
+
             updateDestination(
                 tempNavData.getLat(), tempNavData.getLong(), tempNavData.getFloor(), map!!,
                 map!!.controller, mLocationOverlay, currentFloor
@@ -621,16 +645,19 @@ class MainActivity : AppCompatActivity() {
         mLocationOverlay : MyLocationNewOverlay,
         current_floor: Int
         ) {
-
+        //Toast.makeText(this, "Update Destination Called", Toast.LENGTH_SHORT).show()
 
         @Suppress("SpellCheckingInspection") val waypoints = ArrayList<GeoPoint>()
 
         map.overlays.remove(destMarker)
         map.overlays.remove(roadOverlay)
         map.invalidate()
-
-        currentFloor = endFloor
-        locationMarker.position = endpoint
+        if (currentLocation.getId() != "None") {
+            currentFloor = currentLocation.getNavData().getFloor()
+            current_loc = GeoPoint(currentLocation.getNavData().getLat(), currentLocation.getNavData().getLong())
+            Timber.i("Current location set to: " + current_loc.toString() + ", floor: " + currentFloor.toString())
+            //locationMarker.position = endpoint
+        }
 
         endpoint = GeoPoint(lat,lon)
         endFloor = floor
@@ -638,7 +665,7 @@ class MainActivity : AppCompatActivity() {
         destMarker = Marker(map)
 
         if (floor != current_floor) {
-            destMarker.position = GeoPoint(39.3260909, -82.1069895)
+            destMarker.position = GeoPoint(39.3260704, -82.1070069)
         } else {
             destMarker.position = endpoint
         }
@@ -651,7 +678,7 @@ class MainActivity : AppCompatActivity() {
         map.invalidate()
         updateIndoor()
 
-        if (isLocationUpdating) {
+        if (isLocationUpdating && mLocationOverlay.myLocation != null) {
 
             runOnUiThread {
                 mapController.animateTo(mLocationOverlay.myLocation)
@@ -784,11 +811,13 @@ class MainActivity : AppCompatActivity() {
         val enableLoc = GeoPoint(39.3261291,-82.1069648)//coordinates for center of stocker
 
 
-        if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 100.0 ) {
+        if ( enableLoc.distanceToAsDouble(mLocationOverlay.myLocation) < 75.0 ) {
             if (isLocationUpdating == true) {
-                locationMarker.position = mLocationOverlay.myLocation
+                //locationMarker.position = GeoPoint(39.3259984,-82.1066439)//set loc to door when approaching building entrance
+                current_loc = GeoPoint(39.3259984, -82.1066439)
+                mLocationOverlay.disableFollowLocation()
                 map!!.overlays.remove(mLocationOverlay)
-                map!!.overlays.add(locationMarker)
+                //map!!.overlays.add(locationMarker)
                 map!!.invalidate()
                 isLocationUpdating = false
             }
@@ -796,7 +825,7 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             if (isLocationUpdating == false) {
-                map!!.overlays.remove(locationMarker)
+                //map!!.overlays.remove(locationMarker)
                 map!!.overlays.add(mLocationOverlay)
                 map!!.invalidate()
                 isLocationUpdating = true
@@ -813,7 +842,7 @@ class MainActivity : AppCompatActivity() {
 
         var startPoint: GeoPoint = GeoPoint(39.3260909, -82.1069895)
         var routePoint: GeoPoint = GeoPoint(39.3260909, -82.1069895)
-        val elevator: GeoPoint = GeoPoint(39.3260909, -82.1069895)
+        val elevator: GeoPoint = GeoPoint(39.3260704, -82.1070069)
         val door: GeoPoint = GeoPoint(39.3259984,-82.1066439)
 
         if (displayFloor == currentFloor) {
@@ -822,11 +851,14 @@ class MainActivity : AppCompatActivity() {
                     startPoint = door
                 }
                 else {
-                    startPoint = locationMarker.position
+
+                    //startPoint = locationMarker.position
+                    startPoint = current_loc
                 }
             }
             else {
-                startPoint = locationMarker.position
+                //startPoint = locationMarker.position
+                startPoint = current_loc
             }
 
             if (currentFloor == endFloor) {
@@ -866,6 +898,7 @@ class MainActivity : AppCompatActivity() {
 
             runOnUiThread {
                 if (!rsp.hasErrors()) {
+
                     indoorOverlay = Polyline()
                     val tmp: PointList = rsp.best.points
                     for (i in 0 until rsp.best.points.size) {

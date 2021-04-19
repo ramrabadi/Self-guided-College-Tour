@@ -8,7 +8,7 @@
   <node id='-108655' action='modify' visible='true' lat='39.32617612513' lon='-82.10662651613' />
   <node id='-108656' action='modify' visible='true' lat='39.32627439091' lon='-82.10678446551' />
   <node id='-108659' action='modify' visible='true' lat='39.32592552784' lon='-82.10714321867' />
-  <node id='-108661' action='modify' visible='true' lat='39.32608939262' lon='-82.10698327755'>
+  <node id='-108661' action='modify' visible='true' lat='39.32607243873' lon='-82.10699834545'>
     <tag k='highway' v='elevator' />
     <tag k='name' v='Elevator' />
   </node>
