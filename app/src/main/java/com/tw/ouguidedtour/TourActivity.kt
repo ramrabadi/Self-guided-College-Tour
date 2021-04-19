@@ -3,6 +3,7 @@ package com.tw.ouguidedtour
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
@@ -21,8 +22,12 @@ class TourActivity: YouTubeBaseActivity() {
 
         val button = findViewById<Button>(R.id.go_to_next_location)
         button.setOnClickListener {
+            /*
             val mainIntent = Intent(this, MainActivity::class.java)
-            startActivity(mainIntent)
+            finish()
+
+             */
+            onBackPressed()
         }
 
 
@@ -72,10 +77,13 @@ class TourActivity: YouTubeBaseActivity() {
         displayLocation()
     }
 
+    /*
     override fun onBackPressed() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
+
+     */
 
     
     private fun displayLocation() {
