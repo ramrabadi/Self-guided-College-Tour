@@ -51,8 +51,6 @@ class MainMenuActivity: AppCompatActivity() {
             startActivity(floorPlanIntent)
         }
         scanQRCode.setOnClickListener {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivity(cameraIntent)
             val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
             intentIntegrator.setBeepEnabled(false)
             intentIntegrator.setCameraId(0)
