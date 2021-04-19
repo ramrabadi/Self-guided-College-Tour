@@ -51,6 +51,12 @@ class MainMenuActivity: AppCompatActivity() {
             startActivity(floorPlanIntent)
         }
         scanQRCode.setOnClickListener {
+
+            val s: String = "QRScan";
+            val dataIntent = Intent(this, MainActivity::class.java)
+            dataIntent.putExtra("QRScan", s)
+            startActivity(dataIntent)
+            /*
             val intentIntegrator = IntentIntegrator(this@MainMenuActivity)
             intentIntegrator.setBeepEnabled(false)
             intentIntegrator.setCameraId(0)
@@ -58,6 +64,9 @@ class MainMenuActivity: AppCompatActivity() {
             intentIntegrator.setPrompt("SCAN")
             intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
             intentIntegrator.initiateScan()
+
+             */
+
         }
     }
 
@@ -67,7 +76,7 @@ class MainMenuActivity: AppCompatActivity() {
     }
 
 
-    
+    /*
     //Sends QR data to Database activity
     override fun onActivityResult(
         requestCode: Int,
@@ -83,13 +92,15 @@ class MainMenuActivity: AppCompatActivity() {
                 val s: String = result.contents;
                 val dataIntent = Intent(this, MainActivity::class.java)
                 dataIntent.putExtra("id", s)
-                startActivityForResult(dataIntent, requestCode)
+                startActivityForResult(dataIntent, resultCode)
             }
         } else {
             Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
+
+     */
      
 
 
