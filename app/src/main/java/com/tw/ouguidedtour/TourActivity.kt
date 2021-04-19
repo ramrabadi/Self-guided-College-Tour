@@ -72,6 +72,11 @@ class TourActivity: YouTubeBaseActivity() {
         displayLocation()
     }
 
+    override fun onBackPressed() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
     
     private fun displayLocation() {
 
