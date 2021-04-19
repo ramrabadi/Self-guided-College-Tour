@@ -213,7 +213,13 @@ class MainActivity : AppCompatActivity() {
                     }
 
                 }
-                R.id.VideoViewMenu -> {startActivity(Intent(applicationContext, Activity2::class.java))
+                R.id.VideoViewMenu -> {
+                    if (currentLocation.getId() != "None") {
+                        val mainIntent = Intent(this, TourActivity::class.java)
+                        startActivity(mainIntent)
+                    } else {
+                        Toast.makeText(this, "Try visiting a location first.", Toast.LENGTH_SHORT).show()
+                    }
                     overridePendingTransition(0, 0)
                     return@OnNavigationItemSelectedListener true
                 }
@@ -403,6 +409,11 @@ class MainActivity : AppCompatActivity() {
         Configuration.getInstance()
                 .load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
 
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this, MainMenuActivity::class.java)
+        startActivity(intent)
     }
 
     // Sets QR code value for use in TourActivity

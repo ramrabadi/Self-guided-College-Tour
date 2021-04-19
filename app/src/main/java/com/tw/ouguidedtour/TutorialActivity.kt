@@ -1,53 +1,63 @@
 package com.tw.ouguidedtour
 
-import android.content.Intent
-import android.net.Uri
+import android.graphics.Color
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.google.zxing.integration.android.IntentIntegrator
-import com.journeyapps.barcodescanner.CaptureActivity
+import androidx.fragment.app.FragmentManager
+import com.ramotion.paperonboarding.PaperOnboardingFragment
+import com.ramotion.paperonboarding.PaperOnboardingPage
+import java.util.*
 
-class TutorialActivity: AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle ? ) {
+class TutorialActivity : AppCompatActivity() {
+    private var fragmentManager: FragmentManager? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tutorial)
-
-        val scanTryIt: Button = findViewById(R.id.scan_button)
-        scanTryIt.setOnClickListener {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivity(cameraIntent)
-            val intentIntegrator = IntentIntegrator(this@TutorialActivity)
-            intentIntegrator.setBeepEnabled(false)
-            intentIntegrator.setCameraId(0)
-            intentIntegrator.captureActivity = CaptureActivity::class.java
-            intentIntegrator.setPrompt("SCAN")
-            intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-            intentIntegrator.initiateScan()
-        }
-        val watchVideoButton = findViewById < Button > (R.id.watch_video)
-        watchVideoButton.setOnClickListener {
-            val intent = Intent(this, Activity2::class.java)
-            startActivity(intent)
-        }
-        val readAboutStop = findViewById < Button > (R.id.read_abt_stop)
-        readAboutStop.setOnClickListener {
-            val defaultBrowser = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER)
-            defaultBrowser.data = Uri.parse("https://www.ohio.edu/athens/bldgs/stocker.html")
-            startActivity(defaultBrowser)
-        }
-        val openMap = findViewById < Button > (R.id.see_map_button)
-        openMap.setOnClickListener {
-            val dataIntent = Intent(this, MainActivity::class.java)
-            startActivity(dataIntent)
-        }
-        val floorPlanButton: Button = findViewById(R.id.view_fp_button)
-        floorPlanButton.setOnClickListener {
-            // Display Floor Plan
-            val intent = Intent(this, FloorPlan::class.java)
-            startActivity(intent)
-        }
+        fragmentManager = supportFragmentManager
+        val paperOnboardingFragment =
+            PaperOnboardingFragment.newInstance(dataForOnBoarding)
+        val fragmentTransaction =
+            fragmentManager!!.beginTransaction()
+        fragmentTransaction.add(R.id.fragment_container, paperOnboardingFragment)
+        fragmentTransaction.commit()
     }
+
+    private val dataForOnBoarding: ArrayList<PaperOnboardingPage>
+        private get() {
+            val screen_one = PaperOnboardingPage(
+                "Scan a QR Code!",
+                "To read about a stop.",
+                Color.parseColor("#5873da"),
+                R.drawable.qr_code_tut,
+                R.drawable.qr_code
+            )
+            val screen_two = PaperOnboardingPage(
+                "View the Map!",
+                "To see your location in the Stocker Center.",
+                Color.parseColor("#29bf5e"),
+                R.drawable.map_menu,
+                R.drawable.map_menu
+            )
+            val screen_three = PaperOnboardingPage(
+                "View the Floor Plan!",
+                "To see which floor you're on.",
+                Color.parseColor("#e34847"),
+                R.drawable.blueprint,
+                R.drawable.blueprint
+            )
+            val screen_four = PaperOnboardingPage(
+                "View your current stop!",
+                "To see which stop you're at.",
+                Color.parseColor("#99b725"),
+                R.drawable.flag,
+                R.drawable.flag
+            )
+            val elements =
+                ArrayList<PaperOnboardingPage>()
+            elements.add(screen_one)
+            elements.add(screen_two)
+            elements.add(screen_three)
+            elements.add(screen_four)
+            return elements
+        }
 }

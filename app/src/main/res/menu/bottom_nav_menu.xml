@@ -18,7 +18,7 @@
         android:icon="@drawable/blueprint"/>
     <item
         android:id="@+id/VideoViewMenu"
-        android:title="Video View"
-        android:icon="@drawable/player"/>
+        android:title="Tour Location"
+        android:icon="@drawable/flag"/>
 
 </menu>
