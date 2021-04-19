@@ -435,9 +435,9 @@ class MainActivity : AppCompatActivity() {
             if (result.contents == null) {
                 Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show()
             } else {
-                val dataIntent = intent
-                dataIntent.putExtra("id", result.contents)
-                startActivity(dataIntent)
+                //val dataIntent = intent
+                //dataIntent.putExtra("id", result.contents)
+                //startActivity(dataIntent)
                 qrString = result.contents
                 val tourIntent = Intent(this, TourActivity::class.java)
 
@@ -445,11 +445,15 @@ class MainActivity : AppCompatActivity() {
                     tour.setId(tour.get_tour_id(qrString,"Test.json", assets))
                     tour.load_list_of_stops(tour, qrString, "Test.json", assets)
                     currentLocation = tour.getLocation(tour, qrString)
-                    nextLocation = tour.getLocation(tour, currentLocation.getNextLocationId().toString())
-                    nextLocationId = nextLocation.getId()
-                    val navdat = nextLocation.getNavData()
-                    endFloor = navdat.getFloor()
-                    endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
+                    if (tour.getLocation(tour, currentLocation.getNextLocationId()).getId() != "None") {
+                        nextLocation =
+                            tour.getLocation(tour, currentLocation.getNextLocationId().toString())
+                        nextLocationId = nextLocation.getId()
+                        //val navdat = nextLocation.getNavData()
+                        //endFloor = navdat.getFloor()
+                        //endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
+                    }
+
                     tour.setToursStopVisited(tour, qrString)
                     tourIntent.putExtra("name", currentLocation.getName())
                     tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
@@ -470,11 +474,23 @@ class MainActivity : AppCompatActivity() {
                     }
                     currentLocation = nextLocation
 
+
                     nextLocationId = nextLocation.getNextLocationId()
                     nextLocation = tour.getLocation(tour, nextLocationId)
-                    val navdat = nextLocation.getNavData()
-                    endFloor = navdat.getFloor()
-                    endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
+                    Toast.makeText(this, nextLocation.getId(), Toast.LENGTH_SHORT).show()
+                    /*
+                    if (nextLocation.getId() != "None" ) {
+                        val tempNavData = nextLocation.getNavData()
+                        updateDestination(
+                            tempNavData.getLat(), tempNavData.getLong(), tempNavData.getFloor(), map!!,
+                            map!!.controller, mLocationOverlay, currentFloor
+                        )
+                    }
+                    //val navdat = nextLocation.getNavData()
+                    //endFloor = navdat.getFloor()
+                    //endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
+
+                     */
 
                     tourIntent.putExtra("name", currentLocation.getName())
                     tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
@@ -487,13 +503,18 @@ class MainActivity : AppCompatActivity() {
                         currentLocation = tour.getLocation(tour, qrString)
 
                         nextLocationId = tour.findNextUnvisitedLocation(tour)
-                        val navdat = nextLocation.getNavData()
-                        endFloor = navdat.getFloor()
-                        endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
+                        //val navdat = nextLocation.getNavData()
+                        //endFloor = navdat.getFloor()
+                        //endpoint = GeoPoint(navdat.getLat(),navdat.getLong())
+
 
                         //Toast.makeText(this, "findNextUnvisited", Toast.LENGTH_SHORT).show()
 
                         nextLocation = tour.getLocation(tour, nextLocationId)
+
+
+
+
                         tourIntent.putExtra("name", currentLocation.getName())
                         tourIntent.putExtra("videoUrl", currentLocation.getVideoUrl())
                         tourIntent.putExtra("description", currentLocation.getDescription())
@@ -542,7 +563,8 @@ class MainActivity : AppCompatActivity() {
             val dialog = builder.create()
             dialog.show()
         }
-        /*moved updating of loc variables to qr return in attempting to debug update location
+
+
         Toast.makeText(this, nextLocation.getId(), Toast.LENGTH_SHORT).show()
         if (nextLocation.getId() != "None" ) {
             val tempNavData = nextLocation.getNavData()
@@ -552,7 +574,9 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-         */
+
+
+
 
 
         // Resume map updating of ui
@@ -578,6 +602,11 @@ class MainActivity : AppCompatActivity() {
 
         // Stop getting GPS location
         stopLocationUpdates()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Timber.i("onRestart Called")
     }
     
     private fun updateDestination(

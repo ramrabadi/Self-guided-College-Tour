@@ -111,13 +111,6 @@ class Tour: AppCompatActivity() {
 
 
 
-                   tempNavigationData.setLat((location.getDouble("lat")))
-                   tempNavigationData.setLong((location.getDouble("long")))
-                   tempNavigationData.setFloor((location.getInt("floor")))
-                   output.setNavigationData(tempNavigationData)
-
-
-
                     tour.tour_stops.add(output)
                     tour.tour_stops_visited.add(false)
                 }
