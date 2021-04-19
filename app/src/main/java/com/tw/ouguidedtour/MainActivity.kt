@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     var currentFloor = 1
     var endFloor = 1
     var displayFloor = 1
-    val gpsRoadManager: RoadManager = GraphHopperRoadManager("", false)//"b48048f0-1ee2-4459-ad43-9e5da2d005eb"
+    val gpsRoadManager: RoadManager = GraphHopperRoadManager("b48048f0-1ee2-4459-ad43-9e5da2d005eb", false)
     var isLocationUpdating = true;
     var hopper1 = GraphHopperOSM()
     var hopper2 = GraphHopperOSM()//graph data and routing for each floor
