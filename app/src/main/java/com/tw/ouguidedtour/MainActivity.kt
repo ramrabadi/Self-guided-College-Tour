@@ -100,6 +100,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Timber.i("onCreate Called")
 
+        val qr = intent.getStringExtra("QRScan")
+        if (qr == "QRScan"){
+            val intentIntegrator = IntentIntegrator(this@MainActivity)
+            intentIntegrator.setBeepEnabled(false)
+            intentIntegrator.setCameraId(0)
+            intentIntegrator.setPrompt("SCAN")
+            intentIntegrator.setBarcodeImageEnabled(false)
+            intentIntegrator.initiateScan()
+            //overridePendingTransition(0, 0)
+        }
         //val scanQRCode: Button = findViewById(R.id.QRCodeButton2)
         //val scanQRCode: Button = findViewById(R.id.ScanQR)
         //used for temp json reader
