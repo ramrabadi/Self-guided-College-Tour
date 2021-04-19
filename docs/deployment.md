@@ -28,7 +28,7 @@ The rest of the information will be related to your account or passwords for the
 
 ## JSON File
 
-The Locations don't have to been in order. The names are case sensitive and need to be exactly as shown.  The JSON file should be in the app/src/main/assets folder.
+The Locations don't have to been in order. The names are case sensitive and need to be exactly as shown.  The JSON file should be in the app/src/main/assets folder. The name lat stands for Latitude and long for Longitude For information about Video, Image, Latitude and Longitude, see below.
 
 ![JSON Format](https://i.imgur.com/qQIHAtL.png)
 
@@ -76,3 +76,20 @@ The SHA-1 value will be put in the field of "SHA-1 certificate fingerprint".  Th
 ## Graph Hopper API 
 
 To create the api key for GraphHopper Directions API go to [GraphHopper](https://www.graphhopper.com).  This is much more straight forword than the YouTube API key.
+
+## Get Latitude and Longitude
+
+In the project folder under res/raw/ open the floor(1/2/3).osm in an application called [JOSM](https://josm.openstreetmap.de/) (Java Open Streat Map).  Once Installed open one of the .osm files and then mouse over the entrance to the room / area.  With these Lat, Lon values these will go into the JSON file for that "Location".  The exact path to the .osm files is app/src/main/res/raw.
+
+## Where to place the API keys and JSON file name
+To start the JSON file name can be anything you want it is currently set to "Test.json".  If you don't go with this you will need to change it in two location next to eachother in the MainActivity file.
+
+![JSON File Name](https://i.imgur.com/Rh2DRuV.png)
+
+Then to put your GraphHopper API Key stay in the MainActivity and at the very top.
+
+![GraphHopper API](https://i.imgur.com/g57VuNY.png)
+
+For the YouTube API Key open the TourActivity.kt file in the main directory and replace the key just before
+
+![YouTube API Location](https://i.imgur.com/aLLl0UK.png)
