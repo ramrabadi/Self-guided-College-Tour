@@ -19,5 +19,6 @@ An Android application that incorporates text, voice, and location awareness to 
 
 
 ## Tech Stack 🛠️
+* _Android Studio_
 * _Java_
 * _Kotlin_
